@@ -1,5 +1,9 @@
-# c-_show_config
-show config in the company 
-linux show the time （point)
-！get the fuctions to the .h files 
-！
+# Time Show on Ubuntu ( x86\x86_64\arm )
+
+--------
+
+| ## data_new 
+
+* rewrite the function of show 
+* get the time from the file
+* use system() function to get the time  
