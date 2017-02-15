@@ -39,9 +39,9 @@ SlamwareCorePlatform init(string ipaddress,int port,int timeout)
 
 map<string,int> MapInit(map<string,int> cmap)
 {
-    int size = 20;
-    string a[100] = {"-1","0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20"};
-    int b[100] = {-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+    int size = 22;
+    string a[100] = {"-1","0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21"};
+    int b[100] = {-1,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
     for(int i = 0; i < size; i++)
     {
         cmap[a[i]] = b[i];
@@ -79,8 +79,9 @@ void Helpinfo()
         << "  15 : get lines        get all lines info " << endl
         << "  16 : get sensorvalues get all sensors' values and time " << endl
         << "  17 : get netinfo      get ssid and mode of network " << endl
-        << "  18 : moveby           move to the direction " << endl
-        << " cmd : ";
+        << "  18 : moveby           move to the direction " << endl  
+        << "  19 : sweep            sweep now ... " << endl
+        << "  20 : system param     set SPEED to low medium high " << endl;
     cout << " ----------------------------------------------------------------------------" << endl;
 }
 
@@ -108,7 +109,7 @@ void Moveto_xy(SlamwareCorePlatform platform)
         
     for(vector<Location>::const_iterator it = points.begin(); it != points.end() ; it++ )
         cout <<  " [ " << it->x() << " , " << it->y() << " ] " << endl;
-
+    
     while(moveaction){
         if (flag == 1)
         {
@@ -228,6 +229,7 @@ void TurnLeft(SlamwareCorePlatform platform )
     {
         platform.rotate(Rotation(1,0,0));
     }
+    
     platform.rotate(Rotation(0,0,0));
     cout << time << endl;
     GetLocalTime(&sys);
@@ -295,6 +297,7 @@ void SetNetwork(SlamwareCorePlatform platform)
 
 void GetDeviceInfo(SlamwareCorePlatform platform)
 {
+    try{
     cout << " DeviceInfo --------------------- " << endl;
     DeviceInfo deviceInfo =  platform.getDeviceInfo();
     cout << " deviceID : " << deviceInfo.deviceID() << endl;
@@ -306,10 +309,15 @@ void GetDeviceInfo(SlamwareCorePlatform platform)
     cout << " softwareVersion : " << deviceInfo.softwareVersion() << endl;
     deviceInfo.~DeviceInfo();
     cout << " DeviceInfo --------------------- " << endl;
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void ShowSystemInfo(SlamwareCorePlatform platform)
 {
+    try{
     cout << " battery percentage : " << platform.getBatteryPercentage() << endl;
     cout << " sdk version : " <<  platform.getSDKVersion() << endl;
     cout << " sdp version : " << platform.getSDPVersion() << endl;
@@ -320,10 +328,15 @@ void ShowSystemInfo(SlamwareCorePlatform platform)
         << " change log        : " << platform.getUpdateInfo().newVersionChangeLog << endl
         << " release date      : " << platform.getUpdateInfo().newVersionReleaseDate << endl
         << " ******************************* " << endl;*/
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void LaserScanShow(SlamwareCorePlatform platform)
 {
+    try{
     LaserScan ls = platform.getLaserScan();
     cout << " has pose ? : " << ls.getHasPose() << endl;
     vector<LaserPoint> vlps  = ls.getLaserPoints();
@@ -331,19 +344,29 @@ void LaserScanShow(SlamwareCorePlatform platform)
     {
         cout << " angle :  distance : valid : " << it->angle()  << " : " << it->distance() << " : " <<  it->valid() << endl;
     }
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void GetWalls(SlamwareCorePlatform platform)
 {
+    try{
     cout << " get all walls ... " << endl;
     vector<Line> walls = platform.getWalls();
     for(vector<Line>::iterator it = walls.begin();it != walls.end(); it++)
         cout << " id : " << it->id() << " startP : ( " << it->startP().x() << " , " << it->startP().y()
              << " ) endP : ( " << it->endP().x() << " , " << it->endP().y() << " )"<< endl;
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void AddLine(SlamwareCorePlatform platform)
 {
+    try{
     float px1,px2,py1,py2;
     px1 = px2 = py1 = py2 = 0;
     cout << " add line(x1,y1) (x2,y2) " << endl;
@@ -352,18 +375,28 @@ void AddLine(SlamwareCorePlatform platform)
     cout << " add line startP(" << px1 << "," << py1 
          << " ) endP(" << px2 << "," << ")" << endl;
     platform.addLine(artifact_provider::ArtifactUsageVirtualWall,Line(Point(px1,py2),Point(px2,py2)));
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void GetAllLines(SlamwareCorePlatform platform)
 {
+    try{
     cout << " get ALL Lines : " << endl;
     for(vector<Line>::iterator it = platform.getLines(artifact_provider::ArtifactUsageVirtualWall).begin(); it != platform.getLines(artifact_provider::ArtifactUsageVirtualWall).end(); it++)
     cout << " StartP(" << it->startP().x() << " , " << it->startP().y() << " )" 
          << "   EndP(" << it->endP().x()   << " , " << it->endP().y()   << " )" << endl;
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void AddWall(SlamwareCorePlatform platform)
 {
+    try{
     float px1,py1,px2,py2;
     px1= py1 = px2 = py2 = 0;
     cout << " add wall now ... " << endl;
@@ -371,10 +404,15 @@ void AddWall(SlamwareCorePlatform platform)
     cin >> px1 >> py1 >> px2 >> py2 ;
     cout << " add the wall : " << px1 << "," << py1 << " ---- " << px2 << "," << py2 << endl;
     platform.addWall( Line( Point(px1,py1) , Point(px2,py2) ) );
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void GetSensorValues(SlamwareCorePlatform platform)
 {
+    try{
     bool flag = false;
     vector<impact_sensor::ImpactSensorInfo> sensorinfo;
     impact_sensor::ImpactSensorValue sensorvalue;
@@ -403,19 +441,29 @@ void GetSensorValues(SlamwareCorePlatform platform)
         cout << it->time << endl;
         cout << it->value << endl;
     }*/
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void GetNetworkInfo( SlamwareCorePlatform platform)
 {
+   try{
    map<string,string> networkinfo =  platform.getNetworkStatus();
    for( map<string,string>::iterator it = networkinfo.begin();it != networkinfo.end();it++)
    {
        cout << " " << it->first << " : " << it->second << endl;
    }
+   }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 
 void MoveBy(SlamwareCorePlatform platform)
 {
+    try{
     cout << " move by £¨direction : 0-forward 1-backward 2-turnright 3-turnleft ) : " ;
     int direction;
     cin >> direction;
@@ -437,7 +485,58 @@ void MoveBy(SlamwareCorePlatform platform)
         cout << " wrong input " << endl;
         break;
     }
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
+
+}
+
+void SweepNow(SlamwareCorePlatform platform)
+{
+    try{
+    cout << " start sweeping now ... " << endl;
+    SweepMoveAction sma = platform.startSweep();
+    if(sma.isEmpty())
+    {
+        cout << " sweep over " << endl;
+    }
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
+}
 
 
+void SetSystem(SlamwareCorePlatform platform)
+{
+    try{
+        cout << " set The SYSPARAM_ROBOT_SPEED : " << endl
+             << " [0] : LOW " << endl
+             << " [1] : MEDIUM " << endl
+             << " [2] : HIGH " << endl
+             << " cmd : " ;
+        int cmd;
+        cin >> cmd;
+        switch (cmd){
+        case 0:
+            if(platform.setSystemParameter(SYSPARAM_ROBOT_SPEED,SYSVAL_ROBOT_SPEED_LOW))
+                cout << " SET LOW successful !" << endl;
+            break;
+        case 1:
+            if(platform.setSystemParameter(SYSPARAM_ROBOT_SPEED,SYSVAL_ROBOT_SPEED_MEDIUM))
+                cout << " SET MDEIUM successful !" << endl;
+            break;
+        case 2:
+            if(platform.setSystemParameter(SYSPARAM_ROBOT_SPEED,SYSVAL_ROBOT_SPEED_HIGH))
+                cout << " SET HIGH successful !" << endl;
+            break;
+        default:
+            break;
+        }
+    }catch(rpos::system::detail::ExceptionBase &e)
+    {
+        cout << " fail on " << e.what() << endl;
+    }
 }
 

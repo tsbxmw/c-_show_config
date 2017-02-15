@@ -141,16 +141,18 @@ void main()
             {
 
                 flag = 1;
-                cout << "  -------------------------------------------------------------  " << endl;
-                cout << " |        connect to  " <<  ipadd  << ":1445 " << endl
-                     << " |  -1 : help ?       0 : moveto      1 : addwall              | " << endl 
-                     << " |   2 : clearwalls   3 : addwalls    4 : exit                 | " << endl
-                     << " |   5 : gohome       6 : turn left   7 : turn right           | " << endl
-                     << " |   8 : set network  9 : deviceinfo 10 : robot station        | "<< endl
-                     << " |  11 : map info    12 : laser scan 13 : get walls            | " << endl
-                     << " |  14 : add line    15 : get lines  16 : get sensor values    | " << endl
-                     << " |  17 : get netinfo 18 : moveby                               | " << endl;
-                cout << "  -------------------------------------------------------------  " << endl;
+                cout << endl;
+                cout << "  ---------------------------------------------------------------  " << endl
+                     << " |        connect to  " <<  ipadd  << ":1445 " << endl
+                     << " |  -1 : help ?        0 : moveto       1 : addwall              | " << endl 
+                     << " |   2 : clearwalls    3 : addwalls     4 : exit                 | " << endl
+                     << " |   5 : gohome        6 : turn left    7 : turn right           | " << endl
+                     << " |   8 : set network   9 : deviceinfo  10 : robot station        | " << endl
+                     << " |  11 : map info     12 : laser scan  13 : get walls            | " << endl
+                     << " |  14 : add line     15 : get lines   16 : get sensor values    | " << endl
+                     << " |  17 : get netinfo  18 : moveby      19 : sweep                | " << endl
+                     << " |  20 : system param 21 :                                       | " << endl
+                     << "  ---------------------------------------------------------------  " << endl;
                 cout << " cmd (number) :";
                 cin >> ccmd;
 
@@ -243,6 +245,15 @@ void main()
                 case 18:
                     MoveBy(platform);
                     break;
+
+                case 19:
+                    SweepNow(platform);
+                    break;
+
+                case 20:
+                    SetSystem(platform);
+                    break;
+                case 21:
 
                 default:
                     cout << " wrong input ! try again ! " << endl;
