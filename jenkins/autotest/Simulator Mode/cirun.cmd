@@ -1,0 +1,1 @@
+python debugmode.py %IP_SLAMWARE%

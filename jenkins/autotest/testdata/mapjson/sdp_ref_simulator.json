@@ -1,0 +1,108 @@
+{
+    "type": "ecovas",
+
+    "log": {
+        "global": { "logLevel": "info" },
+        "console": { "logLevel": "info" }
+    },
+
+    "base": {
+        "robot_size": "36 cm",
+
+        "robot_line_speed": 0.45,
+        "encoder_ticks_per_meter": 6390
+    },
+
+    "lidar": {
+        "type": "rplidar",
+        "config": {
+            "channel": "serial2tcp_bridge",
+            "host": "127.0.0.1",
+            "port": 1500,
+            "service": "rplidar"
+        },
+        "observe_radius": 1.0,
+        "hibernate_time": "10s",
+        "aperture": "2 pi",
+        //"aperture_direction": "0.5 pi",
+        //"aperture": "180deg",
+        "require_angular_compensation": true,
+        "installation_pose": {
+            //"x": -0.0304,
+            "x": 0,
+            "yaw": 0
+        },
+		"fit_filter" : {
+			"enable": true
+		},
+		"radius_filter" : {
+			"enable": true,
+			"radius_factor": 1
+		},
+		"normal_filter": {
+			"enable": true,
+			"max_gap_threshold": 2,
+			"max_rho_bias_threshold": 0.01,
+			"back_space_check": 0,
+			"max_failure_count": 0,
+			"min_points_count_threshold": 2,
+			"max_rho_threshold": 0.05
+		},
+        "max_distance": 4.0
+    },
+
+    "motion_plan": {
+        "keep_landmarker_radius": 6,
+        "merge_points_count": 2,
+        "distance_threshold": 0.18,
+        "straight_forward_safe_distance_factor": 0.2,
+        "occupy_size_factor": 1.03,
+        "power_cost_map_factor": 1,
+        "side_margin": 0.1,
+        "motor_control_period": 0.5,
+        "move_resolution": 0.2,
+        "path_search_timeout_duration": 20000000,
+        "bounded_relaxation": false,
+        "max_cost": 2,
+        "sub_path_points_gap": 10,
+        "sub_path_search": true
+        /*"keep_landmarker_radius": 6,
+        "distance_threshold": 0.18,
+        "straight_forward_safe_distance_factor": 0.2*/
+
+    },
+
+    "sweep": {
+        "sweep_resolution": 0.3,
+        "max_sweep_points": 200
+    },
+
+    "simulator": {
+        "enabled": true,
+        "max_moving_speed": 0.1,
+        "map_file": "/home/root/5f.bmp",
+        "scan_points": 180,
+		"debug_sdp": false
+    },
+
+    "docking": {
+        "landing_offset": 0.8,
+        "dock_supported": true,
+        "backward_docking": true,
+        "docking_method": "laserpattern"
+    },
+
+    "features": {
+        "has_ir_docking_tower": true
+    },
+
+    "mapping": {
+        "initial_map_area": {
+            "x": -60,
+            "y": -60,
+            "width": 120,
+            "height": 120
+        }
+    }
+
+}
