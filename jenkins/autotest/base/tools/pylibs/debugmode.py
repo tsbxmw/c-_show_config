@@ -16,6 +16,7 @@
 # modify : 2017.03.03 - change to root mode , delete the simulator mode
 # modify : 2017.03.09 - add new flag root 
 # modify : 2017.03.17 - add new flag unroot , log , unsimulator -- add new function getlog
+# modify : 2017.04.20 - add new function : test the depthcam
 '''
 
 import requests
@@ -100,8 +101,10 @@ class Root(object):
         try:
             self.session.post(url=self.url_debug,data=self.data_debug)
             print "[root] successful"
+            return True
         except:
             print ('[root] wrong with root')
+            return False
             
     def UnRoot(self):
         try:
@@ -133,6 +136,24 @@ class Root(object):
         except:
             print ('[Simulator Mode]Simulator Mode wrong ')
 
+            
+    def TestRealSense(self):
+        try:
+            ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
+            ssh.Connect()
+            ssh.Exec("chmod a+x open.sh")
+            ssh.Exec("./open.sh | grep Successfully > realsense.log")
+            ssh.Close()
+            
+            sf = Sftp(self.ip)
+            sf.Connect()
+            sf.GetFile("/home/root/realsense.log",".\\realsense.log")
+            sf.Close()
+            print "[Test Realsense] - successful "
+        except:
+            print "[Test Realsense] - fail to "
+            
+            
     def UnSimulator(self):
         try:
             ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
@@ -189,8 +210,13 @@ class Root(object):
                         i = i + 1
                         continue
                     try:
-                        self.Root()
-                        print "root ok"
+                        if self.Root():
+                            print "root ok"
+                        else:
+                            print "[Root] Root wrong"
+                            time.sleep(10)
+                            i = i + 1
+                            continue
                     except:
                         print "[Root] Root wrong"
                         time.sleep(10)

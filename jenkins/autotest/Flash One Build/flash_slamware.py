@@ -3,7 +3,9 @@
 '''
 author : wei.meng @ slamtec.inc
 date : 2017.03.09
-version : 1.0
+version : 1.3
+modify : 20170420 - add run the script remove_version.sh
+modify : 20170421 - remove the run of the remove_version.sh
 '''
 
 import sys
@@ -17,6 +19,8 @@ from createreport import Report
 from Checkversion import GetVersion
 from datetime import datetime
 from debugmode import Root
+from SSH import Ssh,Sftp
+
 
 if __name__ == "__main__":
 
@@ -58,6 +62,12 @@ if __name__ == "__main__":
         while i < (int(count) + 1):
             print ("----------------[time %s]----------------"%(i))
             print ("[Flash] start up now ...")
+            # remove the run ssh stage
+            '''rmversion = Ssh(ipadd,"root","slamware123")
+            rmversion.Connect()
+            rmversion.Exec("chmod a+x remove_version.sh")
+            rmversion.Exec("./remove_version.sh")
+            rmversion.Close()'''
             jsoninfo = {}
             infos = {}
             jsoninfo["time"] = str(i)
@@ -86,6 +96,16 @@ if __name__ == "__main__":
             logroot = Root(ipadd)
             logroot.Run("root-log","log"+str(i)+".log")
             print ("******************")
+            print ("[getrealsense] log ... ")
+            logroot.TestRealSense()
+            file = open(".\\realsense.log",'r')
+            linef = file.readline()
+            file.close()
+            if "Successfully" in linef :
+                print "[testrealsense] successful"
+            else:
+                print "[testrealsense] fail - realsense not start !"
+                sys.exit(1)
             i = i + 1
         output.write(json.dumps(testinfo))    
         output.close()

@@ -1,10 +1,11 @@
 *************************************
-* version : 1.0
+* version : 1.2
 * date    : 20170310
 * author  : wei.meng
 * copyright : slamtec.inc
 *************************************
 * modify : 20170320 - change to md file
+* modify : 20170426 - add move and check test
 
 *************************************
 
@@ -20,6 +21,7 @@
     |- tools :
     |- pylibs - including the SSH , Update , Flash ,Check mode etc...
         |- win32tools - some dll or lib or exe or etc...
+             |- zeustool.exe - zeus tool of some function ...
 
 ## 2, Flash Daily Build :
 
@@ -79,7 +81,21 @@
     |- debugmode.py : get the device into the simulator mode
     |- SSH.py : already moved to the base/tools/pylibs dir
    
-## 8, testdata :
+## 8, MoveTest
+
+>    using to test the zeus move and check the moveaction
+
+    MoveTest
+    |- report : the report of the stage MoveTest Mode
+    |- cirum.cmd : the pipeline of the stage MoveTest Mode
+    |- config.config : the config file of move test
+    |- movetest.py : the script of movetest
+    |- moveandcheck.exe : the tool of move and check
+    
+
+
+
+## 9, testdata :
 
 >    using to save the test log / slamware / report or etc...
 
@@ -93,4 +109,5 @@
           |- up : the up build
           |- down : the down build
           |- today : today build
+
     

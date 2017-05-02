@@ -81,7 +81,7 @@ class GetVersion(object):
             os.system("echo fail > compare")
             sys.exit(1)
             
-    
+        
 
     def  RunCheck(self,version_name):
         try:

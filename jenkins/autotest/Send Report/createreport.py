@@ -122,6 +122,8 @@ class Report(object):
         self.deviceinfo = {}
         self.flashonebuild = False
         self.flashdailybuild = False
+        self.flashdownandupbuild = False
+        self.movetest = False
 
 
     def createReport(self,test_name):
@@ -204,8 +206,57 @@ class Report(object):
                 self.jsoninfo_flashdownandupbuild["version_after"] = info["up_values"]["version_up_after"]
                 self.jsoninfo_flashdownandupbuild["end"] = info["up_values"]["up_end"]
         self.flashdownandupbuild = True
-
-
+        
+    def byteify(self,input):
+        if isinstance(input, dict):
+            return {self.byteify(key): self.byteify(value) for key, value in input.iteritems()}
+        elif isinstance(input, list):
+            return [self.byteify(element) for element in input]
+        elif isinstance(input, unicode):
+            return input.encode('utf-8')
+        else:
+            return input
+            
+    def getadd_MoveTest_Info(self):
+        self.jsoninfo_gohome = {}
+        self.jsoninfo_movetest = {}
+        output = open("..\\testdata\\report\\json\\MoveTest.json",'r')
+        macjsondata = json.loads(output.readline().decode('utf-8'),encoding='utf-8')
+        output.close()
+        majd = self.byteify(macjsondata)
+        mci = 0
+        i = 0
+        j = 0
+        ghi = 0
+        for mcjdx in majd:
+            
+            
+            if "moveandcheck" in mcjdx:
+                for mcjd in mcjdx["moveandcheck"]:
+                    if i == 0:
+                        self.jsoninfo_movetest["time"] = mcjd["timenow"]
+                        
+                    if mcjd["result"]:
+                        mci = mci + 1
+                    i = i + 1
+            if "gohome" in mcjdx:
+                for mcjd in mcjdx["gohome"]:
+                    if j == 0:
+                        self.jsoninfo_gohome["time"] = mcjd["timenow"]
+                        
+                    if "success" in mcjd["result"]:
+                        ghi = ghi + 1
+                    j = j + 1
+                    
+        self.jsoninfo_movetest["success"] = mci
+        self.jsoninfo_movetest["all"] = i
+        self.jsoninfo_gohome["success"] = ghi
+        self.jsoninfo_gohome["all"] = j
+        print self.jsoninfo_movetest
+        print self.jsoninfo_gohome
+        self.movetest = True
+        
+        
     def addDeviceInfo(self):
         self.tStatistics.write("<div><br/></div><h2>Device Info</h2>\n")
         self.tStatistics.write("<table class=\"general\" border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
@@ -218,7 +269,7 @@ class Report(object):
     def addInfo(self):
         self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
-        self.tStatistics.write("<div><br/></div><h2>Test Statistics</h2>\n")
+        self.tStatistics.write("<div><br/></div><h2>Flash Test Statistics</h2>\n")
         self.tStatistics.write("<table class=\"general\"  cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
         self.tStatistics.write("<tr><th width=\"10%\">buildname</th><th>Begin Time</th><th>End Time</th><th>others</th><th>Link</th></tr>\n")
         if self.flashdailybuild :
@@ -235,9 +286,19 @@ class Report(object):
                  + self.jsoninfo_flashdownandupbuild["version_up_file"] + " | version down file : " 
                  + self.jsoninfo_flashdownandupbuild["version_down_file"] + " | test count :" 
                  + self.jsoninfo_flashdownandupbuild["count"]+ "</td><td><a href=\"" + self.report_dir + "Flash Down and Up.html\">"+"link"+"</a></td></tr>\n")
+            
         self.tStatistics.write("</table>\n")
-
-
+    
+    def addMoveInfo(self):
+        self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
+        
+        self.tStatistics.write("<div><br/></div><h2>Move Test Statistics</h2>\n")
+        self.tStatistics.write("<table class=\"general\"  cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+        self.tStatistics.write("<tr><th width=\"10%\">build-name</th><th>test date</th><th>test-times</th><th>success-times</th><th>others</th><th>Link</th></tr>\n")
+        if self.movetest:
+            self.tStatistics.write("<tr><td>movetest</td><td>" + str(self.jsoninfo_movetest["time"]) + "</td><td>" + str(self.jsoninfo_movetest["all"]) + "</td><td>" + str(self.jsoninfo_movetest["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
+            self.tStatistics.write("<tr><td>gohome</td><td>" + str(self.jsoninfo_gohome["time"]) + "</td><td>" + str(self.jsoninfo_gohome["all"]) + "</td><td>" + str(self.jsoninfo_gohome["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
+        self.tStatistics.write("</table>\n")
 
     def endReport(self):
         self.tStatistics.write( self.html5)
@@ -271,6 +332,8 @@ if __name__ == "__main__":
         report.getadd_Flash_One_Build_Info()
     if "Flash Down and Up" in teststage:
         report.getadd_Flash_Down_and_Up_Info()
-    
+    if "MoveTest" in teststage:
+        report.getadd_MoveTest_Info()
+    report.addMoveInfo()
     report.addInfo()
     report.endReport()
