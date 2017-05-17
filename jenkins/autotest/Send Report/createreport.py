@@ -3,12 +3,13 @@
 '''
 # author : wei.meng @ slamtec.inc
 # date : 20170307
-# version : 1.6
+# version : 1.7
 # modify : 20170311 - add css to html 
 # modify : 20170313 - add create Flash One Build 
 # modify : 20170323 - add create Daily Build
 # modify : 20170327 - change to json
-# modify : 20170407 -  add create Flash Dwon and Up build 
+# modify : 20170407 - add create Flash Dwon and Up build 
+# modify : 20170517 - add new stage report to summary - the daily build stage report
 '''
 import os, time, sys
 import cgi,re
@@ -259,7 +260,7 @@ class Report(object):
         
     def addDeviceInfo(self):
         self.tStatistics.write("<div><br/></div><h2>Device Info</h2>\n")
-        self.tStatistics.write("<table class=\"general\" border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+        self.tStatistics.write("<table class=\"general\" align=center border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
         self.tStatistics.write("<tr><th width=\"20%\">Name</th><th width=\"30%\">Value</th><th width=\"20%\">Name</th><th width=\"30%\">Value</th></tr>\n")
         self.tStatistics.write("<tr><td>FirmWare version </td> <td>" + str(self.deviceinfo["FirmWare version"]) + "</td><td>Device S/N </td> <td>" + str(self.deviceinfo["Device S/N"]) + "</td></tr>\n")
         self.tStatistics.write("<tr><td>S/N </td> <td>" + str(self.deviceinfo["S/N"]) + "</td><td>Ip address </td> <td>" + str(self.deviceinfo["Ip address"]) + "</td><tr>")
@@ -270,7 +271,7 @@ class Report(object):
         self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
         self.tStatistics.write("<div><br/></div><h2>Flash Test Statistics</h2>\n")
-        self.tStatistics.write("<table class=\"general\"  cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+        self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
         self.tStatistics.write("<tr><th width=\"10%\">buildname</th><th>Begin Time</th><th>End Time</th><th>others</th><th>Link</th></tr>\n")
         if self.flashdailybuild :
             self.tStatistics.write("<tr><td>Flash Daily Build</td><td>"+self.jsoninfo_flashdailybuild["begin"]+"</td><td>" + self.jsoninfo_flashdailybuild["end"] 
@@ -293,12 +294,45 @@ class Report(object):
         self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
         self.tStatistics.write("<div><br/></div><h2>Move Test Statistics</h2>\n")
-        self.tStatistics.write("<table class=\"general\"  cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+        self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
         self.tStatistics.write("<tr><th width=\"10%\">build-name</th><th>test date</th><th>test-times</th><th>success-times</th><th>others</th><th>Link</th></tr>\n")
         if self.movetest:
             self.tStatistics.write("<tr><td>movetest</td><td>" + str(self.jsoninfo_movetest["time"]) + "</td><td>" + str(self.jsoninfo_movetest["all"]) + "</td><td>" + str(self.jsoninfo_movetest["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
             self.tStatistics.write("<tr><td>gohome</td><td>" + str(self.jsoninfo_gohome["time"]) + "</td><td>" + str(self.jsoninfo_gohome["all"]) + "</td><td>" + str(self.jsoninfo_gohome["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
         self.tStatistics.write("</table>\n")
+    
+    '''   
+<div><br/></div><h2>Build and Test info</h2>
+<table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+<tr bgcolor="#00FFFF"><th width="10%">Daily Build</th><th width="10%">Test-Flash DailyBuild</th><th width="10%">Name</th><th width="10%">Value</th><th width="10%">Value</th><th width="10%">Value</th><th width="10%">Value</th></tr>
+<tr height="100px" bgcolor="#E8FFF5"><td>Success </td> <td height="100px">2.3.1_rtm-zeus-20170516</td><td>Device S/N </td> <td>D39D45CDD6EEF19DD3ECF5FC30408705</td></tr>
+</table>
+    '''
+    def addBuildInfo(self):
+        allstages = ["Daily Build","Flash Daily Build","Flash One Build","Flash Down and Up","MoveTest"]
+        runstages = os.getenv("TEST_STAGES")
+        self.tStatistics.write("<div><br/></div><h2>Build and Test info</h2>\n")
+        self.tStatistics.write("<table align=center border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\" style=\"text-align:center\">\n")
+        self.tStatistics.write("<tr bgcolor=\"#00FFFF\"><th width=\"10%\">Daily Build</th>")
+        for stage in allstages:
+            if stage in runstages:
+                self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
+            else:                
+                self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
+                
+        self.tStatistics.write("</tr>\n")
+        
+        self.tStatistics.write("<tr height=\"100px\" bgcolor=\"#E8FFF5\" ><td>success</td>")
+        for stage in allstages:
+            if stage in runstages:
+                self.tStatistics.write("<td width=\"10%\">" + "success" + "</th>")
+            else:                
+                self.tStatistics.write("<td width=\"10%\">" + "norun" + "</th>")
+                
+        self.tStatistics.write("</tr>\n</table>")
+        
+        
+    
 
     def endReport(self):
         self.tStatistics.write( self.html5)
@@ -326,6 +360,7 @@ if __name__ == "__main__":
     
     report.getDeviceInfo(ip)
     report.addDeviceInfo()
+    
     if "Flash Daily Build" in teststage:
         report.getadd_Flash_Daily_Build_Info()
     if "Flash One Build" in teststage:
@@ -336,4 +371,5 @@ if __name__ == "__main__":
         report.getadd_MoveTest_Info()
     report.addMoveInfo()
     report.addInfo()
+    report.addBuildInfo()
     report.endReport()

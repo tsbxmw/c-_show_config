@@ -4,7 +4,8 @@
 author : mengwei @ slamtec.com inc
 date : 20170313
 version : 2.0
-create report for all stage report
+create report for all stage report - with new fuction to create stage report and statis report
+modify : 20170427 - add moveandcheck test report creator functor
 '''
 import os, time, sys
 import cgi,re

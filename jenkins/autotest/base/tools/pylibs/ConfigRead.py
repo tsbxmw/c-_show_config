@@ -1,5 +1,11 @@
 # encoding='utf-8'
+'''
+#version : v1.1
+#date : 20170425
+#author : wei.meng@slamtec.com
+#modify : 20170426 - add writetofile function to write the json info to a file named 'file.json' etc
 
+'''
 import os,sys
 import json
 

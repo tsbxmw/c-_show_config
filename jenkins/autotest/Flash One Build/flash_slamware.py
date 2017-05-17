@@ -96,7 +96,7 @@ if __name__ == "__main__":
             logroot = Root(ipadd)
             logroot.Run("root-log","log"+str(i)+".log")
             print ("******************")
-            print ("[getrealsense] log ... ")
+            '''print ("[getrealsense] log ... ")
             logroot.TestRealSense()
             file = open(".\\realsense.log",'r')
             linef = file.readline()
@@ -105,7 +105,7 @@ if __name__ == "__main__":
                 print "[testrealsense] successful"
             else:
                 print "[testrealsense] fail - realsense not start !"
-                sys.exit(1)
+                sys.exit(1)'''
             i = i + 1
         output.write(json.dumps(testinfo))    
         output.close()

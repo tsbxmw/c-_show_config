@@ -1,5 +1,13 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+'''
+version : v1.2
+authore : wei.meng @ slamtec.com
+date : 20170304
+
+modify : 20170503 - add update_new and runupdate_new function at the new slamware version 2.4.0_dev
+'''
+
 
 import requests
 import json
@@ -14,6 +22,8 @@ class Update(object):
         self.url_login = 'http://' + self.ip + '/service/system/login'
         self.url_update = 'http://' + self.ip + '/service/system/firmware_upgrade/full_update'
         self.url_status = 'http://' + self.ip + '/service/system/task/status'
+        self.url_update_new = 'http://' + self.ip + '/service/system/system_upgrade'
+        self.url_restore = 'http://' + self.ip + '/service/system/restore'
         self.firmware_path = fm_path
         self.data_login = {'name':'admin', 'pw':'admin111'}
 
@@ -35,10 +45,22 @@ class Update(object):
             print ('[update] wait for update [120s]')
             time.sleep(120)
         except:
-            print ('[update] wait for update [120s]')
+            print ('[update - error ] wait for update [120s]')
             time.sleep(120)
         
-        
+    def Update_New(self):
+        try:
+            files = {'file':open(self.firmware_pathm,'rb')}
+            print '[update_new] load the firmware file '
+            startupdate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+            print '[update_new - start time] ' + str(startupdate)
+            self.session.post(url=self.url_update_new,files=files)
+            print '[update_new] wait for update [120s]'
+            time.sleep(120)
+        except :
+            print ('[update_new] error wait for 120 s')
+            time.sleep(120)
+            
 
     def GetResult(self):
         while True:
@@ -120,6 +142,41 @@ class Update(object):
         except requests.exceptions.RequestException:
             print 'requests error'
             sys.exit(1)
+            
+    def RunUpdate_New(self):
+        try:
+            i = 1
+            while True:
+                print ("[update_new] try times " + str(i))
+                if self.Ping():
+                    print ("[update_new][ping] ok")
+                else :
+                    print ("[update_new][ping] waiting for network online")
+                    time.sleep(30)
+                    i = i + 1
+                    continue
+                try:
+                    self.Login().raise_for_status()
+                except:
+                    print ("[update_new][login] waitting for login successfully")
+                    time.sleep(10)
+                    i = i + 1
+                    continue
+                break
+            self.Update_New()
+            self.GetResult()
+        
+        except requests.exceptions.ConnectionError:
+            print 'requests.exceptions.ConnectionError'
+            sys.exit(1)
+        except requests.exceptions.Timeout:
+            print 'requests.exceptions.Timeout'
+            sys.exit(1)
+        except requests.exceptions.RequestException:
+            print 'requests error'
+            sys.exit(1)
+                    
+                
     #except:
      #   print 'upload firmware file successfully, wait for updating'
      #   print sys.exc_info()

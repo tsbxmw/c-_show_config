@@ -1,5 +1,11 @@
 # encoding='utf-8'
 
+'''
+# date    : 20170426
+# author  : wei.meng@slamtec.com
+# version : 1.1
+# modify  : 20170505 - add the info to the file
+'''
 import os,sys,time,json
 from ConfigRead import ConfigRead
 from subprocess import Popen,PIPE
@@ -10,9 +16,12 @@ class MoveAndCheck(object):
     def __init__(self):
         self.cr = ConfigRead()
         self.jsondata = []
+        
+    # return the date-time 
     def timenow(self):
         return str(time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime(time.time())))
-
+    
+    # show the MoveTest config info 
     def showTestInfo(self):
         data = self.cr.getTest()
         for d in data:
@@ -25,30 +34,33 @@ class MoveAndCheck(object):
                 gohomenum = d["testtimes"]
                 print "[MoveAndCheck] gohome test -- " + str(gohomenum) 
 
+    # get the move and check points from configread
     def getMoveCheckPoints(self):
         self.points = []
         movecheck = self.cr.getTest_moveandcheck()
         for mc in movecheck["points"]:
-            self.points.append([mc["pointx"],mc["pointy"],mc["a2num"],movecheck["checknum"]])
+            self.points.append([mc["pointx"],mc["pointy"],mc["a2num"],movecheck["checknum"],mc["result"]])
         print "[getMoveCheckPoints]" + str(self.points)
         return self.points
-
-    def moveandcheck(self,ip,px,py,a2n,checknum):
+    
+    # the test move and check
+    def moveandcheck(self,ip,px,py,a2n,checknum,result):
         try:
-            print "[moveandcheck] move to " + str(px) + "," + str(py) + " using a2-" + str(a2n) +" checknum" + str(checknum) + "%"
+            print "[moveandcheck] move to " + str(px) + "," + str(py) + " using a2-" + str(a2n) + " result-shouldbe-" + str(result) + " checknum" + str(checknum) + "%"
             os.system("moveandcheck.exe " + ip + " " + str(px) + " " + str(py) + " " + str(a2n) + " " + str(checknum))
             file = open("movetoxy.result",'r')
-            result = file.readline()
+            resultf = file.readline()
             file.close()
-            if "success" in result:
+            if (("success" in resultf ) and ( result == 1 ) ) or (("fail" in resultf) and (result == 0)) :
                 print "[moveandcheck] move to " + str(px) + "," + str(py) + " using a2-" + str(a2n) + " test success"
                 return True
-            if "fail" in result:
+            else :
                 print "[moveandcheck] move to " + str(px) + "," + str(py) + " using a2-" + str(a2n) + " test fail"
                 return False
         except:
             print "[moveandcheck] error"
-
+    
+    # get the gohome points from configread
     def getGoHomePoints(self):
         self.gohomeP = []
         gohome = self.cr.getTest_gohome()
@@ -57,6 +69,7 @@ class MoveAndCheck(object):
         print "[getGoHomePoints]" + str(self.gohomeP)
         return self.gohomeP
 
+    # the test go home
     def gohome(self,ip,px,py,num):
         try:
             print "[gohome] move to  " + str(px) + "," + str(py) + " | " + str(num) 
@@ -71,7 +84,7 @@ class MoveAndCheck(object):
         except:
             print "[gohome] error  -- "
 
-
+    # run test all function
     def RunTest(self,ip,testname):
         try:
             if testname == "moveandcheck":               
@@ -79,7 +92,7 @@ class MoveAndCheck(object):
                     os.remove(r'json\\moveandcheck.json')
                 mcjson = []
                 for point in self.points:
-                    result = self.moveandcheck(ip,point[0],point[1],point[2],point[3])
+                    result = self.moveandcheck(ip,point[0],point[1],point[2],point[3],point[4])
                     mcjson.append({"timenow":self.timenow(),"ip":ip,"pointx":point[0],"pointy":point[1],"a2num":point[2],"checknum":point[3],"result":result})
                 self.WriteToFile("json\\moveandcheck.json",mcjson)
                 
@@ -104,6 +117,7 @@ class MoveAndCheck(object):
         except:
             print "[RunTest] error -- "
 
+    # write the test info json to the file
     def writetestinfo(self):
         self.WriteToFile("testinfo.json",self.jsondata)
         
