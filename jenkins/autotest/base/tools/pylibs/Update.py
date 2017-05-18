@@ -1,11 +1,18 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
-version : v1.2
-authore : wei.meng @ slamtec.com
-date : 20170304
+# version : v1.21
+# authore : wei.meng @ slamtec.com
+# date    : 20170304
+# modify  : 20170503 - add update_new and runupdate_new function at the new slamware version 2.4.0_dev
+# modify  : 20170518 - /service/system/system_upgrade is the new action url.
 
-modify : 20170503 - add update_new and runupdate_new function at the new slamware version 2.4.0_dev
+####
+#   ip - slamware ip
+#   url_login - login action url
+#   url_update - update action url of version 2.3.x and before
+#   url_update_new - updateaction url of version 2.4.x and new
+####
 '''
 
 
@@ -27,7 +34,7 @@ class Update(object):
         self.firmware_path = fm_path
         self.data_login = {'name':'admin', 'pw':'admin111'}
 
-
+    # Login the slamware web Administrator with 'admin' and 'admin111'
     def Login(self):
         self.session = requests.Session()
         print '[login] session init, ready to login' 
@@ -35,6 +42,7 @@ class Update(object):
         print '[login] ok'
         return login
 
+    # Update : using file upload the firmware and run it
     def Update(self):
         try:
             files = {'file': open(self.firmware_path, 'rb')}
@@ -42,26 +50,26 @@ class Update(object):
             startupdate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
             print '[ start time ] ' + str(startupdate) 
             self.session.post(url=self.url_update,files=files)
-            print ('[update] wait for update [120s]')
-            time.sleep(120)
+            print ('[update] wait for update [240 s]')
+            time.sleep(240)
         except:
-            print ('[update - error ] wait for update [120s]')
-            time.sleep(120)
+            print ('[update - error ] wait for update [240 s]')
+            time.sleep(240)
         
     def Update_New(self):
         try:
-            files = {'file':open(self.firmware_pathm,'rb')}
+            files = {'file':open(self.firmware_path,'rb')}
             print '[update_new] load the firmware file '
             startupdate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
             print '[update_new - start time] ' + str(startupdate)
             self.session.post(url=self.url_update_new,files=files)
-            print '[update_new] wait for update [120s]'
-            time.sleep(120)
+            print '[update_new] wait for update [240 s]'
+            time.sleep(240)
         except :
-            print ('[update_new] error wait for 120 s')
-            time.sleep(120)
+            print ('[update_new] error wait for 240 s')
+            time.sleep(240)
             
-
+    
     def GetResult(self):
         while True:
             if self.Ping():
@@ -83,6 +91,8 @@ class Update(object):
                 print "[update] waitting for update complete"
                 time.sleep(10)
                 continue
+            ### first of all , using the web info to judge the update complete or not ,
+            ### but now ,sdk connect and version info is the double check
             # req_json = json.loads(req.text)
             # if req_json['message'] == 'Idle':
                 # endupdate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
@@ -162,9 +172,15 @@ class Update(object):
                     time.sleep(10)
                     i = i + 1
                     continue
+                try:
+                    self.Update_New()
+                except:
+                    print ("[update_new][update] waitting for update successfully")
+                    time.sleep(10)
+                    i = i + 1
+                    continue
                 break
-            self.Update_New()
-            self.GetResult()
+                self.GetResult()
         
         except requests.exceptions.ConnectionError:
             print 'requests.exceptions.ConnectionError'

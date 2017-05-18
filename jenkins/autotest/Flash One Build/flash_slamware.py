@@ -3,9 +3,10 @@
 '''
 author : wei.meng @ slamtec.inc
 date : 2017.03.09
-version : 1.3
+version : 1.4
 modify : 20170420 - add run the script remove_version.sh
 modify : 20170421 - remove the run of the remove_version.sh
+#modify : 20170518 - add judgement to the update funtion : RunUpdate . RunUpdate_New
 '''
 
 import sys
@@ -62,7 +63,9 @@ if __name__ == "__main__":
         while i < (int(count) + 1):
             print ("----------------[time %s]----------------"%(i))
             print ("[Flash] start up now ...")
-            # remove the run ssh stage
+            # remove the run ssh stage 
+            ## the remove_version.sh is the shell , when your slamware version at 2.3.1 before ,it alwalys 
+            ## can't downgrade . if u run the shell . you can downgrade your slamware version to lower version.
             '''rmversion = Ssh(ipadd,"root","slamware123")
             rmversion.Connect()
             rmversion.Exec("chmod a+x remove_version.sh")
@@ -79,7 +82,10 @@ if __name__ == "__main__":
             beginupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
             infos["begin"] = str(beginupdate)
             time_use1 = datetime.now()
-            update.RunUpdate()
+            if "2.4" in str(version_before) :
+                update.RunUpdate_New()
+            else:
+                update.RunUpdate()
             check.RunCheck(filename)
             infos["version_before"] = str(version_before)
             time_use2 = datetime.now()
@@ -96,6 +102,7 @@ if __name__ == "__main__":
             logroot = Root(ipadd)
             logroot.Run("root-log","log"+str(i)+".log")
             print ("******************")
+            #### test realsense(depth cam) is up or not
             '''print ("[getrealsense] log ... ")
             logroot.TestRealSense()
             file = open(".\\realsense.log",'r')

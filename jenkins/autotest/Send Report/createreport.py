@@ -309,7 +309,7 @@ class Report(object):
 </table>
     '''
     def addBuildInfo(self):
-        allstages = ["Daily Build","Flash Daily Build","Flash One Build","Flash Down and Up","MoveTest"]
+        allstages = ["Flash Daily Build","Flash One Build","Flash Down and Up","MoveTest"]
         runstages = os.getenv("TEST_STAGES")
         self.tStatistics.write("<div><br/></div><h2>Build and Test info</h2>\n")
         self.tStatistics.write("<table align=center border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\" style=\"text-align:center\">\n")
@@ -325,7 +325,7 @@ class Report(object):
         self.tStatistics.write("<tr height=\"100px\" bgcolor=\"#E8FFF5\" ><td>success</td>")
         for stage in allstages:
             if stage in runstages:
-                self.tStatistics.write("<td width=\"10%\">" + "success" + "</th>")
+                self.tStatistics.write("<td width=\"10%\">" + "complete" + "</th>")
             else:                
                 self.tStatistics.write("<td width=\"10%\">" + "norun" + "</th>")
                 
@@ -357,7 +357,8 @@ if __name__ == "__main__":
     report = Report()
     report.createCSS()
     report.createReport(productname)
-    
+    # add build result info here to show 
+    report.addBuildInfo()
     report.getDeviceInfo(ip)
     report.addDeviceInfo()
     
@@ -371,5 +372,4 @@ if __name__ == "__main__":
         report.getadd_MoveTest_Info()
     report.addMoveInfo()
     report.addInfo()
-    report.addBuildInfo()
     report.endReport()

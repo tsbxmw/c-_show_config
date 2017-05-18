@@ -56,6 +56,11 @@ node("${PRODUCT_NAME}") {
     bat "del /Q \".\\testdata\\report\\log\\Flash One Build\\*\""
     bat "del /Q \".\\testdata\\report\\log\\Flash Wrong Build\\*\""
     bat "del /Q \".\\testdata\\report\\log\\MoveTest\\*\""
+    bat "del /Q \".\\MoveTest\\json\\*\""
+    bat "del /Q \".\\MoveTest\\log\\*\""
+    bat "del /Q \".\\MoveTest\\report\\*\""
+    
+    
     
     //if TEST_STAGES contains the Send Report stage, we send the report
     if(testTypes.contains("Send Report")) 
@@ -93,6 +98,7 @@ def RunTestStage(this_stage, sendReport, stop_on_fail=true) {
                 sh 'sh ./cirun'
             } 
             else {
+                
                 def cmd = '''cirun.cmd'''
                 if(env.WINDOWS_SET_CHCP!=null) 
                 {

@@ -3,7 +3,8 @@
 '''
 author : wei.meng @ slamtec.inc
 date : 2017.03.09
-version : 1.0
+version : 1.1
+modify : 20170518 - if the version_now is 2.4.0 or higher , use update.RUNUpdate_new() else use before
 '''
 
 import sys
@@ -56,7 +57,10 @@ if __name__ == "__main__":
         jsoninfo["begin"] = str(beginupdate)
         #output.write("begin=" + str(beginupdate) + "\n")
         time_use1 = datetime.now()
-        update.RunUpdate()
+        if "2.4" in str(check.getversion()):
+            update.RunUpdate_New()
+        else:
+            update.RunUpdate()
         check.RunCheck(filename)
         time_use2 = datetime.now()
         #output.write("timeuse=" + str((time_use2-time_use1).seconds) + "\n")

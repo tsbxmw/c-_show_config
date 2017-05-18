@@ -3,8 +3,9 @@
 '''
 # date    : 20170426
 # author  : wei.meng@slamtec.com
-# version : 1.1
+# version : 1.2
 # modify  : 20170505 - add the info to the file
+# modify  : 20170518 - complete the setup function
 '''
 import os,sys,time,json
 from ConfigRead import ConfigRead
@@ -127,9 +128,11 @@ class MoveAndCheck(object):
         f.write(jsonin)
         f.close()
 
-    def SetUp(self):
+    def SetUp(self,ip):
         print "[setup] gohome now "
         print "[setup] set map now "
+        os.system("..\\base\\tools\\win32tools\\zeustool.exe 24 " + ip +" map\\map.stcm")
+        print "[MoveTest] set map over ."
         
 if __name__ == "__main__":
     if len(sys.argv) > 1:
@@ -137,7 +140,7 @@ if __name__ == "__main__":
     else:
         print "[MoveAndCheck] error with sys.argv"
     ma = MoveAndCheck()
-    ma.SetUp()
+    ma.SetUp(ip)
     ma.showTestInfo()
     ma.getMoveCheckPoints()
     ma.getGoHomePoints()

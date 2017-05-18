@@ -3,8 +3,9 @@
 '''
 author : wei.meng @ slamtec.inc
 date : 2017.03.10
-version : 1.1
+version : 1.2
 modify : 20170407 - add the up down to the summary.html
+#modify : 20170518 - add the judgement of Update's Function : RunUpdate and RunUpdate_new.
 '''
 
 import sys
@@ -81,7 +82,10 @@ if __name__ == "__main__":
             infos["down_begin"] = str(begindown)
             time_use1 = datetime.now()
             #-----------------------up is info ---------#
-            updatedown.RunUpdate()
+            if "2.4" in str(version_before) :
+                updatedown.RunUpdate_New()
+            else:
+                updatedown.RunUpdate()
             check.RunCheck(filedownname)
             #-----------------------up is downgrade ----------#
             check.save_content()
@@ -109,7 +113,10 @@ if __name__ == "__main__":
             infos["up_begin"] = str(beginup)
             time_use1 = datetime.now()
             #-----------------------up is info ---------#
-            updateup.RunUpdate()
+            if "2.4" in str(version_before) :
+                updateup.RunUpdate_New()
+            else:
+                updateup.RunUpdate()
             check.RunCheck(fileupname)
             #-----------------------up is upgrade ----------#
             check.save_content()
