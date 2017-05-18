@@ -145,7 +145,8 @@ def configEnv() {
     try{ env.NAME_OF_DOWNBUILD = "${NAME_OF_DOWNBUILD}" }catch(Exception e){}
     try{ env.NAME_OF_UPBUILD = "${NAME_OF_UPBUILD}" }catch(Exception e){}
     try{ env.NAME_OF_WRONGBUILD = "${NAME_OF_WRONGBUILD}" }catch(Exception e){}
-
+    try{ env.BUILD_RESULT = "${BUILD_RESULT}"}catch(Exception e){}
+    
         a = env.PYTHONPATH
         pylib = pwd() + "\\base\\tools\\pylibs"
         if(a) 
