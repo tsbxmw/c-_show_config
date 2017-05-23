@@ -17,6 +17,7 @@
 # modify : 2017.03.09 - add new flag root 
 # modify : 2017.03.17 - add new flag unroot , log , unsimulator -- add new function getlog
 # modify : 2017.04.20 - add new function : test the depthcam
+# modify : 2017.05.23 - replace 'unroot' by 'unrt' and replace 'unsimulator' by 'unsm' 
 '''
 
 import requests
@@ -255,7 +256,7 @@ class Root(object):
                         continue
                    
                     break
-            if "unroot" in flag:
+            if "unrt" in flag:
                 while True: 
                     print ("try " + "times " + str(i))
                     try:
@@ -279,7 +280,7 @@ class Root(object):
                         i = i + 1
                         continue
                     break
-            if "unsimulator" in flag :
+            if "unsm" in flag :
                 while True: 
                     print ("try " + "times " + str(i))
                     try:
