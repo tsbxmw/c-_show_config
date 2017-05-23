@@ -231,7 +231,7 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
     
 }
 
-//do not work fine at the jenkins.slamtec.com
+//work fine at windows when the git remote-url local-url command do not work good
 def checkout(remote,local)
 {
     str = "if exist " + local + " ( cd " + local + " & git pull " + remote + " ) else ( md " + local + " & git clone " + remote + " " + local + "\\ )"
