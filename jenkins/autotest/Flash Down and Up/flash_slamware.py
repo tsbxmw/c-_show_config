@@ -1,11 +1,12 @@
-#!/usr/bin/python
+·#!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
-author : wei.meng @ slamtec.inc
-date : 2017.03.10
-version : 1.2
-modify : 20170407 - add the up down to the summary.html
-#modify : 20170518 - add the judgement of Update's Function : RunUpdate and RunUpdate_new.
+# author : wei.meng @ slamtec.inc
+# date : 2017.03.10
+# version : 1.2
+# modify : 20170407 - add the up down to the summary.html
+# modify : 20170518 - add the judgement of Update's Function : RunUpdate and RunUpdate_new.
+# modify : 20170523 - add downgrade check , if can not falsh the down version , just according to property of the version info.
 '''
 
 import sys
