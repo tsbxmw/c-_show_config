@@ -1,9 +1,12 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+
+
 '''
-author : wei.meng @ slamtec.inc
-date : 2017.03.09
-version : 1.0
+# author : wei.meng @ slamtec.inc
+# date : 2017.03.09
+# version : 1.1
+# modify : 2017.05.24 - add 2.4 version check before update
 '''
 
 import sys
@@ -45,7 +48,8 @@ if __name__ == "__main__":
         update = Update(ipadd,localpath+"\\"+filename)
         check = GetVersion(ipadd)
         check.save_content()
-        jsoninfo["version_before"] = str(check.getversion())
+		thisversion = str(check.getversion())
+        jsoninfo["version_before"] = thisversion
         jsoninfo["version_file"] = str(filename)
         jsoninfo["remote_path"] = str(filepath)
         print ("******************************************************************")
@@ -53,14 +57,18 @@ if __name__ == "__main__":
         beginupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
         jsoninfo["begin"] = str(beginupdate)
         time_use1 = datetime.now()
-        update.RunUpdate()
+		if '2.4' in thisversion:
+			update.RunUpdate_New()
+		else:
+			update.RunUpdate()
+			
         time_use2 = datetime.now()
         jsoninfo["timeuse"] = str((time_use2-time_use1).seconds)
         endupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()))
         jsoninfo["end"] = str(endupdate)
         check.save_content()
         version_after = check.getversion()
-        check.RunCheck(version_after)
+        check.RunCheck_1(version_after)
         output.write(json.dumps(jsoninfo))
         output.close()
         

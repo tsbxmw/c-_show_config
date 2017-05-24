@@ -10,6 +10,7 @@
 # modify : 20170327 - change to json
 # modify : 20170407 - add create Flash Dwon and Up build 
 # modify : 20170517 - add new stage report to summary - the daily build stage report
+# modify : 20170524 - add new stage info : Flash Wrong Build to the []
 '''
 import os, time, sys
 import cgi,re
@@ -309,7 +310,7 @@ class Report(object):
 </table>
     '''
     def addBuildInfo(self):
-        allstages = ["Flash Daily Build","Flash One Build","Flash Down and Up","MoveTest"]
+        allstages = ["Flash Daily Build","Flash One Build","Flash Down and Up","Flash Wrong Build","MoveTest"]
         runstages = os.getenv("TEST_STAGES")
         self.tStatistics.write("<div><br/></div><h2>Build and Test info</h2>\n")
         self.tStatistics.write("<table align=center border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\" style=\"text-align:center\">\n")
