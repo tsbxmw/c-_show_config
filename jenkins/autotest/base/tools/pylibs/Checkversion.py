@@ -84,22 +84,22 @@ class GetVersion(object):
             
         
     def compare_cannotdown(self,version_name):
-        print "[getupdateversion-1] cannot downgrade version check running"
-        print "[getupdateversion-1] firmware version is : " + version_name
-		print "[getupdateversion-1] current  version is : " + self.version_num + " " + self.version_date
-		if self.version_date in version_name :
-			if self.version_num in version_name:
-				print "[getupdateversion-1][--- update failed (version name and num is right , should not be downgrade !)  ---] "
-				osystem("echo fail > compare ")
-			else:
-				print "[getupdateversion-1]< successful > version date check OK"
-				os.system("echo successful > compare")
-				sys.exit(1)
-		else :
-			print "[getupdateversion-1]< successful > version date check OK"
-			os.system("echo successful > compare")
-			sys.exit(1)
-			
+        print "[getupdateversion-1] not-downgrade version check running"
+        print "[getupdateversion-1] before   version is : " + version_name
+        print "[getupdateversion-1] current  version is : " + self.version_num + " " + self.version_date
+        if self.version_date in version_name :
+            if self.version_num in version_name:
+                print "[getupdateversion-1][--- update failed (version name and num is right , should not be downgrade !)  ---] "
+                os.system("echo fail > compare ")
+                sys.exit(1)
+            else:
+                print "[getupdateversion-1]< successful > version date check OK"
+                os.system("echo successful > compare")
+                
+        else :
+            print "[getupdateversion-1]< successful > version date check OK"
+            os.system("echo successful > compare")
+            
 
     def  RunCheck(self,version_name):
         try:
@@ -111,14 +111,14 @@ class GetVersion(object):
             print "[getupdateversion]< error > wrong with error : " + str(e)
             sys.exit(1)
     
-	def RunCheck_1(self,version_name):
-		try :
-			self.save_content()
-			self.getversion()
-			self.splitversion()
-			self.compare_cannotdown(version_name)
-		except Exception,e:
-			print "[getupdateversion-1]< error > wrong with error : " + str(e)
-			sys.exit(1)
+    def RunCheck_1(self,version_name):
+        try :
+            self.save_content()
+            self.getversion()
+            self.splitversion()
+            self.compare_cannotdown(version_name)
+        except Exception,e:
+            print "[getupdateversion-1]< error > wrong with error : " + str(e)
+            sys.exit(1)
 # sdp_edison.2.2.1_rtm.20170301.bin
 # 2.2.1_rtm-sdp-20170301
