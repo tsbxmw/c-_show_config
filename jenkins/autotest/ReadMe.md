@@ -1,12 +1,12 @@
 *************************************
-* version : 1.3
+* version : 1.2
 * date    : 20170310
 * author  : wei.meng
 * copyright : slamtec.inc
 *************************************
 * modify : 20170320 - change to md file
 * modify : 20170426 - add move and check test
-* modify : 20170524 - add flash wrong build test
+
 *************************************
 
 # ReadMe.md
@@ -44,18 +44,7 @@
     |- flash_slamware.bat : the old script to flash the slamware which is writed by bat script
     |- flash_slamware.py : the new script using to replace the old 
     |- sdkconnect.exe : test the sdk connect with the zeus or sdk ...
-
-### 3.1 Flash Wrong Build
-
-> using the wrong build to test the downgrade slamware
-
-    Flash Wrong Build
-    | - report : the report of the stage Flash Wrong Build
-    | - cirum.cmd : the pipeline would run this cmd on windows
-    | - flash_slamware.bat : the old script to flash the slamware which is writed by bat script
-    | - flash_slamware.py : the new script to flash the slamware  using to replace the old one
-    | - sdkconnect.exe : test the sdk connect with the zeus or sdk , if slamwared on ,we can connect to it.
-
+    
 ## 4, Flash One Build :
 
 >    using one build to test the slamware upgrade
