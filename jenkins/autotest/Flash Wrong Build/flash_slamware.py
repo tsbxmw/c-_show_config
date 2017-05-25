@@ -48,7 +48,7 @@ if __name__ == "__main__":
         update = Update(ipadd,localpath+"\\"+filename)
         check = GetVersion(ipadd)
         check.save_content()
-		thisversion = str(check.getversion())
+        thisversion = str(check.getversion())
         jsoninfo["version_before"] = thisversion
         jsoninfo["version_file"] = str(filename)
         jsoninfo["remote_path"] = str(filepath)
@@ -57,19 +57,20 @@ if __name__ == "__main__":
         beginupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
         jsoninfo["begin"] = str(beginupdate)
         time_use1 = datetime.now()
-		if '2.4' in thisversion:
-			update.RunUpdate_New()
-		else:
-			update.RunUpdate()
-			
+        if '2.4' in thisversion:
+            update.RunUpdate_New()
+        else:
+            update.RunUpdate()
+            
         time_use2 = datetime.now()
         jsoninfo["timeuse"] = str((time_use2-time_use1).seconds)
         endupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()))
         jsoninfo["end"] = str(endupdate)
         check.save_content()
         version_after = check.getversion()
-        check.RunCheck_1(version_after)
+        jsoninfo["version_after"] = version_after
         output.write(json.dumps(jsoninfo))
+        check.RunCheck_1(thisversion)
         output.close()
         
         print ("[Flash] update end now ...")
