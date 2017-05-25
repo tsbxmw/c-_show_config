@@ -1,12 +1,12 @@
 *************************************
-* version : 1.2
+* version : 1.3
 * date    : 20170310
 * author  : wei.meng
 * copyright : slamtec.inc
 *************************************
 * modify : 20170320 - change to md file
 * modify : 20170426 - add move and check test
-
+* modify : 20170525 - add downgrade version test
 *************************************
 
 # ReadMe.md
@@ -44,6 +44,17 @@
     |- flash_slamware.bat : the old script to flash the slamware which is writed by bat script
     |- flash_slamware.py : the new script using to replace the old 
     |- sdkconnect.exe : test the sdk connect with the zeus or sdk ...
+
+### 3.1 , Flash Wrong Build :
+
+> using the wrong build or should not be downgrade version to test
+
+    Flash Wrong Build:
+    | - report : the report of the stage Flash Wrong Build
+    | - cirun.cmd : the pipeline script would run this cmd on windows
+    | - flash_slamware.bat : the old script of bat
+    | - flash_slamware.py : ths new script of python
+    | - sdkconnect.exe : using to check the slamware up or down
     
 ## 4, Flash One Build :
 
@@ -92,7 +103,6 @@
     |- movetest.py : the script of movetest
     |- moveandcheck.exe : the tool of move and check
     
-
 
 
 ## 9, testdata :

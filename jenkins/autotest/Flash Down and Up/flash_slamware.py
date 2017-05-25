@@ -1,4 +1,4 @@
-·#!/usr/bin/python
+#!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
 # author : wei.meng @ slamtec.inc

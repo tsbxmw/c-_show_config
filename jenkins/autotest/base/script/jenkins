@@ -56,9 +56,9 @@ node("${PRODUCT_NAME}") {
     bat "del /Q \".\\testdata\\report\\log\\Flash One Build\\*\""
     bat "del /Q \".\\testdata\\report\\log\\Flash Wrong Build\\*\""
     bat "del /Q \".\\testdata\\report\\log\\MoveTest\\*\""
-    bat "del /Q \".\\MoveTest\\json\\*\""
-    bat "del /Q \".\\MoveTest\\log\\*\""
-    bat "del /Q \".\\MoveTest\\report\\*\""
+    bat "if exist \".\\MoveTest\\json\" ( del /Q \".\\MoveTest\\json\\*\" )"
+    bat "if exist \".\\MoveTest\\log\" ( del /Q \".\\MoveTest\\log\\*\" )"
+    bat "if exist \".\\MoveTest\\report\" ( del /Q \".\\MoveTest\\report\\*\" )"
     
     
     
@@ -269,10 +269,16 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
 def checkout(remote,local)
 {
     
+    //delete all things at jenkins workspace
+    echo "-----------------------------------------------------"
+    bat 'del /s /q *'
+    bat 'rd /s /q checkout'
+    echo "-----------------------------"
     str = "if exist " + local + " ( cd " + local + " & git pull " + remote + " ) else ( md " + local + " & git clone " + remote + " " + local + "\\ )"
     echo str
     bat str
     //bat "git clone " + remote + " " + local + "\\"
+    echo "-----------------------------------------------------"
 }
 
 def execCommand(cmd) {
