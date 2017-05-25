@@ -21,7 +21,7 @@ node("${PRODUCT_NAME}") {
     echo env.PYTHONPATH
     
     //when stage test failed, stop the whole test 
-    testTypesStopOnFailed = ["Download Daily Build","Flash Daily Build","Flash Down and Up","Flash One Build","Simulator Mode","Send Report"]
+    testTypesStopOnFailed = ["Download Daily Build","Flash Wrong Build","Flash Daily Build","Flash Down and Up","Flash One Build","Simulator Mode","Send Report"]
     //the stage which is not need send report
     noNeedReportStage = ["Send Report"]
     
@@ -74,15 +74,16 @@ node("${PRODUCT_NAME}") {
     {
         if(t=="Send Report")
             continue
-        echo "-----------------------------------------"
-        echo " stage " + t
+        echo "================================================================================"
+        echo "= Stage " + t
+        echo "================================================================================"
         stop_on_fail = false
         if(testTypesStopOnFailed.contains(t)) 
         {
             stop_on_fail = true
         }
         RunTestStage(t, sendReport, stop_on_fail)
-        echo "-----------------------------------------"
+        echo "================================================================================"
     }
     publishTestReport(testTypes, noNeedReportStage, sendReport)
 }
@@ -170,10 +171,36 @@ def configEnv() {
 
 //do not complete this function
 def publishFailed(stage_name,errorinfo) {
+    echo "================================================================================"
+    echo "= Send Fail Email"
     subjects = stage_name + " Failed!"
-    detail = errorinfo
+    //detail = errorinfo
     
-    mail body: detail, cc: "${FAIL_MAIL_TO}", charset: 'UTF-8', mimeType: 'text/html',subject:subjects , to: "${FAIL_MAIL_TO}"
+    //mail body: detail, cc: "${FAIL_MAIL_TO}", charset: 'UTF-8', mimeType: 'text/html',subject:subjects , to: "${FAIL_MAIL_TO}"
+   
+    body = """
+    <html>
+        <head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <title>ZEUS_DAILY TEST REPORT</title>
+        <body>
+            <div>
+                <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+                <tr bgcolor="#00FFFF" height="100px" style="color:red"><th width="100%">Daily Build Test Faild</th></tr>
+                </table>
+                
+                <br></br>
+                
+                <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+                <tr align="center" bgcolor="#F0F80F" height="10px" style="color:blue"><th width="15%">build name</th><th width="15%">build number</th><th width="15%">fail stage</th><th width="55%">build url</th></tr>
+                <tr align="center" bgcolor="#F0F8FF" height="40px" style="color:black"><td width="15%">"""+  env.JOB_NAME  +"""</td><td width="15%">"""+ env.BUILD_NUMBER +"""</td><td width="15%">""" + stage_name + """</td><td width="55%">""" + env.BUILD_URL + """ </td></tr>
+                </table>
+                
+            </div>
+        </body>
+    </html>
+    """
+    mail body: body, cc: "${FAIL_MAIL_TO}", charset: 'UTF-8', mimeType: 'text/html',subject:subjects , to: "${FAIL_MAIL_TO}"
     
 }
 
@@ -183,7 +210,7 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
     reportFiles = ""
     for(t in testTypes) 
     {
-        if(!noNeedReportStage.contains(t)) 
+        if(!noNeedReportStage.contains(t))  
         {
             bat 'copy  \"' + t +'\\report\\\"* ' + "testdata\\report\\"
             cmdstr = "move testdata\\report\\report.html \"testdata\\report\\" + t + '.html\"'
@@ -201,7 +228,10 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
     
     if(sendReport) 
     {
-        stage "Create Report"
+        
+        echo "================================================================================"
+        stage "Create Report"        
+        echo "================================================================================"
         dir("Send Report")
         {
             execCommand("cirun.cmd")
@@ -216,7 +246,11 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
     
     if(sendReport){
         //send test mail to wei.meng
+        
+        echo "================================================================================"
         stage "Send mail"
+        
+        echo "================================================================================"
         String mailbody = readFile(".\\testdata\\report\\summary.html")
         String subjects = 'ZEUS AUTO TEST REPORT -- ' + env.JOB_NAME + "--" +  env.BUILD_NUMBER
         echo subjects
@@ -234,6 +268,7 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
 //work fine at windows when the git remote-url local-url command do not work good
 def checkout(remote,local)
 {
+    
     str = "if exist " + local + " ( cd " + local + " & git pull " + remote + " ) else ( md " + local + " & git clone " + remote + " " + local + "\\ )"
     echo str
     bat str
