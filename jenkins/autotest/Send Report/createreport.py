@@ -126,6 +126,7 @@ class Report(object):
         self.flashdailybuild = False
         self.flashdownandupbuild = False
         self.movetest = False
+        self.flashwrongbuild = False
 
 
     def createReport(self,test_name):
@@ -258,6 +259,23 @@ class Report(object):
         print self.jsoninfo_gohome
         self.movetest = True
         
+    #{"begin": "2017-04-06-12:19:57", "end": "2017-04-06-12:22:19", "timeuse": "141", 
+    #"version_before": "2.3.0_beta-zeus-20170406", "version_file": "wrongbuild.txt", 
+    #"remote_path": "\\\\10.254.0.3\\share\\temp\\mengwei\\wrongbuild.txt"}
+    def getadd_Flash_Wrong_Build_Info(self):
+        self.jsoninfo_flashwrongbuild = {}
+        output = open("..\\testdata\\report\\json\\Flash Wrong Build.json",'r')
+        macjsondata = json.load(output)
+        output.close()
+        majd = self.byteify(macjsondata)
+        self.jsoninfo_flashwrongbuild["begin"] = majd["begin"]
+        self.jsoninfo_flashwrongbuild["end"] = majd["end"]
+        self.jsoninfo_flashwrongbuild["version_before"] = majd["version_before"]
+        self.jsoninfo_flashwrongbuild["remote_path"] = majd["remote_path"]
+        self.jsoninfo_flashwrongbuild["version_file"] = majd["version_file"]
+        self.jsoninfo_flashwrongbuild["timeuse"] = majd["timeuse"]        
+        self.jsoninfo_flashwrongbuild["version_after"] = majd["version_after"]
+        self.flashwrongbuild = True
         
     def addDeviceInfo(self):
         self.tStatistics.write("<div><br/></div><h2>Device Info</h2>\n")
@@ -288,7 +306,11 @@ class Report(object):
                  + self.jsoninfo_flashdownandupbuild["version_up_file"] + " | version down file : " 
                  + self.jsoninfo_flashdownandupbuild["version_down_file"] + " | test count :" 
                  + self.jsoninfo_flashdownandupbuild["count"]+ "</td><td><a href=\"" + self.report_dir + "Flash Down and Up.html\">"+"link"+"</a></td></tr>\n")
-            
+        if self.flashwrongbuild :
+            self.tStatistics.write("<tr><td>Flash Wrong Build </td><td>" + self.jsoninfo_flashwrongbuild["begin"] + "</td><td>" + self.jsoninfo_flashwrongbuild["end"]
+                 + "</td><td> version before : " + self.jsoninfo_flashwrongbuild["version_before"] + " | version after : " +  self.jsoninfo_flashwrongbuild["version_after"] + " | version file : " 
+                 + self.jsoninfo_flashwrongbuild["version_file"] + "</td><td><a href=\"" + self.report_dir + "Flash Wrong Build.html\">" + "link" + "</a></td></tr>\n")
+                 
         self.tStatistics.write("</table>\n")
     
     def addMoveInfo(self):
@@ -369,6 +391,8 @@ if __name__ == "__main__":
         report.getadd_Flash_One_Build_Info()
     if "Flash Down and Up" in teststage:
         report.getadd_Flash_Down_and_Up_Info()
+    if "Flash Wrong Build" in teststage:
+        report.getadd_Flash_Wrong_Build_Info()
     if "MoveTest" in teststage:
         report.getadd_MoveTest_Info()
     report.addMoveInfo()
