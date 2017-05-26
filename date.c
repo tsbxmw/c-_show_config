@@ -4,7 +4,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
-void strcpy_1(char a[8][6],char b[8][6]){
+void strcpy_1(char a[40][40],char b[40][40]){
     for(int i =0;i<8;i++)
             for(int j=0;j<6;j++)
                     a[i][j] = b[i][j];
