@@ -107,7 +107,6 @@ def RunTestStage(this_stage, sendReport, stop_on_fail=true) {
                 }
                 bat cmd
             }
-        
             try {
                 if(fileExists('report/report.xml'))
                     publishXML source:"report/report.xml",target:this_stage+".xml"
