@@ -198,7 +198,12 @@ int i = 0;
 tmp = strtok(buf," ");
 while(tmp!=NULL&&i<4){
     tmp = strtok(NULL," ");
-    if(i==3){
+    //at ubuntu 16.04 
+    /*
+        if(i==2)
+           i++;
+    */
+    if(i==3){ 
         i = 4;
     }
     i++;
