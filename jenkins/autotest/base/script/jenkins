@@ -49,16 +49,16 @@ node("${PRODUCT_NAME}") {
     bat "xcopy /yse .\\checkout\\testdata\\* .\\testdata\\"
     
     //delete the reports and jsons file and logs
-    bat "del /Q .\\testdata\\report\\*"
-    bat "del /Q .\\testdata\\report\\json\\*"
-    bat "del /Q \".\\testdata\\report\\log\\Flash Daily Build\\*\""
-    bat "del /Q \".\\testdata\\report\\log\\Flash Down and Up\\*\""
-    bat "del /Q \".\\testdata\\report\\log\\Flash One Build\\*\""
-    bat "del /Q \".\\testdata\\report\\log\\Flash Wrong Build\\*\""
-    bat "del /Q \".\\testdata\\report\\log\\MoveTest\\*\""
-    bat "if exist \".\\MoveTest\\json\" ( del /Q \".\\MoveTest\\json\\*\" )"
-    bat "if exist \".\\MoveTest\\log\" ( del /Q \".\\MoveTest\\log\\*\" )"
-    bat "if exist \".\\MoveTest\\report\" ( del /Q \".\\MoveTest\\report\\*\" )"
+    deletedir(".\\testdata\\report")
+    deletedir(".\\testdata\\report\\json")
+    deletedir(".\\testdata\\report\\log\\Flash Daily Build")
+    deletedir(".\\testdata\\report\\log\\Flash Down and Up")
+    deletedir(".\\testdata\\report\\log\\Flash One Build")
+    deletedir(".\\testdata\\report\\log\\Flash Wrong Build")
+    deletedir(".\\testdata\\report\\log\\MoveTest")
+    deletedir(".\\MoveTest\\json")
+    deletedir(".\\MoveTest\\log")
+    deletedir(".\\MoveTest\\report")
     
     
     
@@ -137,7 +137,10 @@ def RunTestStage(this_stage, sendReport, stop_on_fail=true) {
     }
 }
 
-
+def deletedir(dirname)
+{
+     bat "if exist \"" + dirname  +"\" ( del /Q \"" + dirname + "\\*\" )"
+}
 def configEnv() {
     
     try{ env.PRODUCT_NAME = "${PRODUCT_NAME}" }catch(Exception e) {}
@@ -270,8 +273,8 @@ def checkout(remote,local)
     
     //delete all things at jenkins workspace
     echo "-----------------------------------------------------"
-    bat 'del /s /q *'
-    bat 'rd /s /q checkout'
+    bat 'del /s /Q *'
+    bat 'if exist checkout ( rd /s /q checkout )'
     echo "-----------------------------"
     str = "if exist " + local + " ( cd " + local + " & git pull " + remote + " ) else ( md " + local + " & git clone " + remote + " " + local + "\\ )"
     echo str

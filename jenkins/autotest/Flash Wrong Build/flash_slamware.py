@@ -70,7 +70,8 @@ if __name__ == "__main__":
         version_after = check.getversion()
         jsoninfo["version_after"] = version_after
         output.write(json.dumps(jsoninfo))
-        check.RunCheck_1(thisversion)
+        check.RunCheck(thisversion)
+        check.RunCheck_1(filename)
         output.close()
         
         print ("[Flash] update end now ...")
