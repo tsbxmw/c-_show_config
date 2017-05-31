@@ -39,7 +39,13 @@ class Ssh(object):
             return out
         except Exception,e:
             print "[SSH Exec] : wrong with it -- " + str(e)   
-
+    def Exec_noreturn(self,cmd):
+        try:
+            print "[exec-noreturn] " + str(cmd)
+            stdin, stdout, stderr = self.connect.exec_command(cmd)
+        except Exception,e:
+            print "[SSH Exec-noreturn] : wrong with it -- " + str(e)
+    
     def Close(self):
         try:
             self.connect.close()

@@ -12,12 +12,14 @@
             ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref.json ")
 # author : slamtec.inc - wei.meng
 # date   : 20170301
+# ver    : 1.7
 # modify : 2017.03.02 - add info of data , change user_pass to self.unlock_info
 # modify : 2017.03.03 - change to root mode , delete the simulator mode
 # modify : 2017.03.09 - add new flag root 
 # modify : 2017.03.17 - add new flag unroot , log , unsimulator -- add new function getlog
 # modify : 2017.04.20 - add new function : test the depthcam
 # modify : 2017.05.23 - replace 'unroot' by 'unrt' and replace 'unsimulator' by 'unsm' 
+# modify : 2017.05.27 - modify the  log get function , to get the logs after rebooting
 '''
 
 import requests
@@ -170,6 +172,30 @@ class Root(object):
     def GetLog(self,logname):
         try:
             ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
+            '''
+            while True:
+                try:
+                    ssh.Connect()
+                    ssh.Exec_noretrun("reboot")
+                    print "[getlog] waitting for rebooting to get the log file"
+
+                    break
+                except:
+                    print "[getlog] wrong with reboot"
+                    time.sleep(3)
+                    continue
+            while True:
+                try:
+                    ssh.Connect()
+                    ssh.Close()
+                    print "[getlog] waitting for rebooting to get the log file"
+                    break
+                except:
+                    print "[getlog] waitting for rebooting to get the log file"
+                    time.sleep(3)
+                    continue
+            '''
+
             ssh.Connect()
             ssh.Exec("journalctl > /home/root/system.log")          
             ssh.Close()
