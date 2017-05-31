@@ -6,6 +6,7 @@ def version
 def date
 def result=[]
 def buildname
+def stageoftest
 //----------------------------------------------------------------------
 
 stage 'Get Build Info'
@@ -20,7 +21,16 @@ node('rsg' && 'i386-gcc4.6')
 
 node('Rsg-slave7'){
     
-    
+   // bat 'if exist checkout ( rd /s /q checkout ) else ( md checkout )'
+   // checkout("","checkout")
+   // dir('checkout')
+    //{
+     //   checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], gitTool: 'windowsGit', submoduleCfg: [], userRemoteConfigs: [[credentialsId: '6e519a56-9857-46cc-ad30-369cd6984189', url: 'https://stash.slamtec.com/scm/slam/topic_slamware_release.git']]])
+     //   version = readFile 'scripts/version.txt'
+      //  date = new Date().format('yyyyMMdd')
+    //}
+    echo version
+    echo date
     
     if(!BuildDaily())
     {
@@ -29,6 +39,21 @@ node('Rsg-slave7'){
     }
     else
     {
+        if("${TEST_NAME}" == "Daily Test")
+        {
+            stageoftest = """Flash Daily Build\nFlash Wrong Build\nMoveTest\nSend Report"""
+        }
+        if("${TEST_NAME}" == "Flash Test")
+        {
+            stageoftest = """Flash Daily Build\nFlash Wrong Build\nSend Report"""
+        }
+        if("${TEST_NAME}" == "Move Test")
+        {
+            stageoftest = """MoveTest\nSend Report"""
+        }
+        
+        
+        stage "Build Daily Test"
         def versionname = 'zeus_edison.' + version.minus('\n') + '.' + date + '.bin'
         echo versionname
         def SHARE_PATH = '\\\\10.254.0.3\\share\\release\\daily\\'
@@ -47,9 +72,9 @@ node('Rsg-slave7'){
         def MAIL_CC = 'wei.meng@slamtec.com'
         def FAIL_MAIL_TO = 'wei.meng@slamtec.com'
         def BUILD_RESULT = 'success'
-        def TEST_STAGES =  "${TEST_STAGES}"
+        def TEST_STAGES =  stageoftest
         
-        testresult = build job: 'ZEUS_AUTOTEST', parameters: [[$class: 'StringParameterValue', name: 'PRODUCT_NAME', value: 'ZEUS_TEST'],[$class: 'StringParameterValue', name: 'TEST_NAME', value: 'ZEUS_DAILY'], [$class: 'TextParameterValue', name: 'TEST_STAGES', value:TEST_STAGES], [$class: 'StringParameterValue', name: 'IP_SLAMWARE', value: IP_SLAMWARE], [$class: 'StringParameterValue', name: 'SLAMWARE_PATH', value: SLAMWARE_PATH], [$class: 'StringParameterValue', name: 'NAME_OF_WRONGBUILD', value: NAME_OF_WRONGBUILD], [$class: 'StringParameterValue', name: 'COUNT_OF_ONEBUILD', value: COUNT_OF_ONEBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_ONEBUILD', value: NAME_OF_ONEBUILD],[$class: 'StringParameterValue', name: 'COUNT_OF_DOWNUP', value: COUNT_OF_DOWNUP ], [$class: 'StringParameterValue', name: 'NAME_OF_DOWNBUILD', value:NAME_OF_DOWNBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_UPBUILD', value: NAME_OF_UPBUILD ],[$class: 'StringParameterValue', name: 'MAIL_TO', value: MAIL_TO],[$class: 'StringParameterValue', name: 'MAIL_CC', value: MAIL_CC], [$class: 'StringParameterValue', name: 'FAIL_MAIL_TO', value: FAIL_MAIL_TO],[$class: 'StringParameterValue', name: 'BUILD_RESULT', value: BUILD_RESULT]],propagate: false
+        testresult = build job: 'ZEUS_AUTOTEST', parameters: [[$class: 'StringParameterValue', name: 'PRODUCT_NAME', value: 'ZEUS_TEST'],[$class: 'StringParameterValue', name: 'TEST_NAME', value: "${TEST_NAME}"], [$class: 'TextParameterValue', name: 'TEST_STAGES', value:TEST_STAGES], [$class: 'StringParameterValue', name: 'IP_SLAMWARE', value: IP_SLAMWARE], [$class: 'StringParameterValue', name: 'SLAMWARE_PATH', value: SLAMWARE_PATH], [$class: 'StringParameterValue', name: 'NAME_OF_WRONGBUILD', value: NAME_OF_WRONGBUILD], [$class: 'StringParameterValue', name: 'COUNT_OF_ONEBUILD', value: COUNT_OF_ONEBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_ONEBUILD', value: NAME_OF_ONEBUILD],[$class: 'StringParameterValue', name: 'COUNT_OF_DOWNUP', value: COUNT_OF_DOWNUP ], [$class: 'StringParameterValue', name: 'NAME_OF_DOWNBUILD', value:NAME_OF_DOWNBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_UPBUILD', value: NAME_OF_UPBUILD ],[$class: 'StringParameterValue', name: 'MAIL_TO', value: MAIL_TO],[$class: 'StringParameterValue', name: 'MAIL_CC', value: MAIL_CC], [$class: 'StringParameterValue', name: 'FAIL_MAIL_TO', value: FAIL_MAIL_TO],[$class: 'StringParameterValue', name: 'BUILD_RESULT', value: BUILD_RESULT]],propagate: false
         if(testresult["result"] == "SUCCESS")
         {
             echo "Test Daily Successful !"
@@ -58,6 +83,7 @@ node('Rsg-slave7'){
         else{
             echo "Test Daily Failed !"
             echo "-----------------------------------------------------"
+            
         }
     }
     //echo result["startTimeInMillis"]
@@ -73,8 +99,8 @@ node('Rsg-slave7'){
 def BuildDaily(){
 
     // daily build of zeus master branch
-    stage 'Daily Build'
-    stage "Build Daily Test"
+    stage '\u001B[32m Daily Build'
+
     buildname = 'TEST_SCRIPT'
     result = build job: buildname, parameters: [[$class: 'StringParameterValue', name: 'TEST_STAGES', value: 'Flash Daily Build']], propagate: false
     echo result["buildVariables"]
