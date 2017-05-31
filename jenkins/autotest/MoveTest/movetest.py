@@ -3,9 +3,10 @@
 '''
 # date    : 20170426
 # author  : wei.meng@slamtec.com
-# version : 1.2
+# version : 1.21
 # modify  : 20170505 - add the info to the file
 # modify  : 20170518 - complete the setup function
+# modify  : 20170527 - bug fix1.20 - set map take 20s , we should sleep 30s to wait setting map complete.
 '''
 import os,sys,time,json
 from ConfigRead import ConfigRead
@@ -133,6 +134,7 @@ class MoveAndCheck(object):
         print "[setup] set map now "
         os.system("..\\base\\tools\\win32tools\\zeustool.exe 24 " + ip +" map\\map.stcm")
         print "[MoveTest] set map over ."
+        time.sleep(30)
         
 if __name__ == "__main__":
     if len(sys.argv) > 1:
