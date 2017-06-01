@@ -316,13 +316,13 @@ class Report(object):
     def addMoveInfo(self):
         self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
-        self.tStatistics.write("<div><br/></div><h2>Move Test Statistics</h2>\n")
-        self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
-        self.tStatistics.write("<tr><th width=\"10%\">build-name</th><th>test date</th><th>test-times</th><th>success-times</th><th>others</th><th>Link</th></tr>\n")
         if self.movetest:
+            self.tStatistics.write("<div><br/></div><h2>Move Test Statistics</h2>\n")
+            self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+            self.tStatistics.write("<tr><th width=\"10%\">build-name</th><th>test date</th><th>test-times</th><th>success-times</th><th>others</th><th>Link</th></tr>\n")        
             self.tStatistics.write("<tr><td>movetest</td><td>" + str(self.jsoninfo_movetest["time"]) + "</td><td>" + str(self.jsoninfo_movetest["all"]) + "</td><td>" + str(self.jsoninfo_movetest["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
             self.tStatistics.write("<tr><td>gohome</td><td>" + str(self.jsoninfo_gohome["time"]) + "</td><td>" + str(self.jsoninfo_gohome["all"]) + "</td><td>" + str(self.jsoninfo_gohome["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
-        self.tStatistics.write("</table>\n")
+            self.tStatistics.write("</table>\n")
     
     '''   
 <div><br/></div><h2>Build and Test info</h2>
