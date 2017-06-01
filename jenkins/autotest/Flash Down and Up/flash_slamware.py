@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         check = GetVersion(ipadd)
 
-        if fileuppath == None or filedownpath == None:
+        if fileuppath == None or filedownpath == None or fileuppath in "None" or filedownpath in "None" :
             print ("[up&down] input path is None")
             gvi = Gvinfo()            
             check.save_content()

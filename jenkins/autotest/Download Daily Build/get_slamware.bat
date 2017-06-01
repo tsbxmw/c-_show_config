@@ -30,6 +30,9 @@ set slamware_local=..\testdata\sdprprom\today
 :: delete the local path files
 :: echo Y | del %slamware_local%\*
 
+if not exist log ( md log )
+if not exist report ( md report )
+
 if exist %slamware_path%\%slamware_name%  (
 	 echo find the %slamware_name% ! 
      echo find > .\report\report.html 
