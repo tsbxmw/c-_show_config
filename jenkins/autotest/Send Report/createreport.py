@@ -127,6 +127,7 @@ class Report(object):
         self.flashdownandupbuild = False
         self.movetest = False
         self.flashwrongbuild = False
+        self.stage_result = {}
 
 
     def createReport(self,test_name):
@@ -381,9 +382,8 @@ if __name__ == "__main__":
     report.createCSS()
     report.createReport(productname)
     # add build result info here to show 
-    report.addBuildInfo()
-    report.getDeviceInfo(ip)
-    report.addDeviceInfo()
+   
+   
     
     if "Flash Daily Build" in teststage:
         report.getadd_Flash_Daily_Build_Info()
@@ -395,6 +395,10 @@ if __name__ == "__main__":
         report.getadd_Flash_Wrong_Build_Info()
     if "MoveTest" in teststage:
         report.getadd_MoveTest_Info()
+    
+    report.addBuildInfo()
+    report.getDeviceInfo(ip)
+    report.addDeviceInfo()
     report.addMoveInfo()
     report.addInfo()
     report.endReport()
