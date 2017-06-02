@@ -93,11 +93,11 @@ class GetVersion(object):
                 os.system("echo fail > compare ")
                 sys.exit(1)
             else:
-                print "[getupdateversion-1]< successful > version date check OK"
+                print "[getupdateversion-1]< successful > version check OK"
                 os.system("echo successful > compare")
                 
         else :
-            print "[getupdateversion-1]< successful > version date check OK"
+            print "[getupdateversion-1]< successful > version check OK"
             os.system("echo successful > compare")
             
 
