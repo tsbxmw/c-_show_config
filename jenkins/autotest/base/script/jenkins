@@ -179,7 +179,30 @@ def publishFailed(stage_name,errorinfo) {
     //detail = errorinfo
     
     //mail body: detail, cc: "${FAIL_MAIL_TO}", charset: 'UTF-8', mimeType: 'text/html',subject:subjects , to: "${FAIL_MAIL_TO}"
-   
+    
+    stages = "${TEST_STAGES}".replaceAll(/\r\n|\r/,'\n').tokenize('\n')
+    def htmlxxx 
+    def htmlyyy 
+    for (t in stages){
+        htmlxxx = htmlxxx + """<th width=15%>""" + t + """</th>"""
+    }
+    htmlxxx = htmlxxx + """</tr>"""
+
+    int yyy = 0
+    for (t in stages){
+        if (yyy == 0 && t != null){
+            htmlyyy = htmlyyy + """<td width=15%> complete </th>"""
+        }else if (yyy == 1 && t != null){
+            htmlyyy = htmlyyy + """<td width=15%> norun </th>"""
+        }
+        if (t == stage_name )
+        {
+            htmlyyy = htmlyyy + """<td width=15%> failed </th>"""
+            yyy = 1
+        }
+    }
+    htmlyyy = htmlyyy + """</tr>"""
+
     body = """
     <html>
         <head>
@@ -192,7 +215,14 @@ def publishFailed(stage_name,errorinfo) {
                 </table>
                 
                 <br></br>
-                
+                <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+                <tr align="center" bgcolor="#00FFFF" height="10px" style="color:blue">""" + 
+                htmlxxx +
+                """<tr align="center" bgcolor="#E8FFF5" height="40px" style="color:black">""" +
+                htmlyyy +
+                """</table>
+
+                <br></br>
                 <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
                 <tr align="center" bgcolor="#F0F80F" height="10px" style="color:blue"><th width="15%">build name</th><th width="15%">build number</th><th width="15%">fail stage</th><th width="55%">build url</th></tr>
                 <tr align="center" bgcolor="#F0F8FF" height="40px" style="color:black"><td width="15%">"""+  env.JOB_NAME  +"""</td><td width="15%">"""+ env.BUILD_NUMBER +"""</td><td width="15%">""" + stage_name + """</td><td width="55%">""" + env.BUILD_URL + """ </td></tr>
