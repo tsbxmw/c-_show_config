@@ -97,8 +97,9 @@ class Root(object):
             ssh.Close()
             print "[sn-unlock-num] " + self.snunlock
             self.data_debug = {'cha-token':self.snunlock}
-        except:
+        except Exception,e:
             print ('[sn-unlock] wrong with get sn unlock')
+            raise e
 
     def Root(self):
         try:
