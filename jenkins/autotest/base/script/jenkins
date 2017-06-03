@@ -181,26 +181,55 @@ def publishFailed(stage_name,errorinfo) {
     //mail body: detail, cc: "${FAIL_MAIL_TO}", charset: 'UTF-8', mimeType: 'text/html',subject:subjects , to: "${FAIL_MAIL_TO}"
     
     stages = "${TEST_STAGES}".replaceAll(/\r\n|\r/,'\n').tokenize('\n')
-    def htmlxxx 
-    def htmlyyy 
-    for (t in stages){
-        htmlxxx = htmlxxx + """<th width=15%>""" + t + """</th>"""
-    }
-    htmlxxx = htmlxxx + """</tr>"""
 
-    int yyy = 0
-    for (t in stages){
-        if (yyy == 0 && t != null){
-            htmlyyy = htmlyyy + """<td width=15%> complete </th>"""
-        }else if (yyy == 1 && t != null){
-            htmlyyy = htmlyyy + """<td width=15%> norun </th>"""
+    for(t in stages) 
+    {
+        if(t != stage_name && !noNeedReportStage.contains(t))  
+        {
+            bat 'copy  \"' + t +'\\report\\\"* ' + "testdata\\report\\"
+            cmdstr = "move testdata\\report\\report.html \"testdata\\report\\" + t + '.html\"'
+            bat cmdstr
+            bat 'copy  \"' + t +'\\\"testinfo.json testdata\\report\\json\\'
+            bat "move testdata\\report\\json\\testinfo.json \"testdata\\report\\json\\" + t + '.json\"'
+            //not complete
+            bat 'copy \"' + t + '\\log\\\"* ' + "\"testdata\\report\\log\\" + t + "\\\""
+            
+            reportFiles = reportFiles + t +".html,"
         }
+        else
+        {
+            break;
+        }
+        
+    }
+    bat "mkdir \\\\10.254.1.27\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%"
+    bat "xcopy /yse .\\testdata\\report\\* \\\\10.254.1.27\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%\\"
+
+    def htmlxxx = ' ' 
+    def htmlyyy = ' '
+    int yyy = 0
+    print stages
+    for (t in stages ) {
+        
+        htmlxxx = htmlxxx + """<th width=15%>""" + t + """</th>"""
         if (t == stage_name )
         {
             htmlyyy = htmlyyy + """<td width=15%> failed </th>"""
             yyy = 1
         }
+        else{
+            
+            if (yyy == 0 && t != null){
+                htmlyyy = htmlyyy + """<td width=15%> complete </th>"""
+            }else if (yyy == 1 && t != null ){
+    
+                htmlyyy = htmlyyy + """<td width=15%> not run </th>"""
+            }
+        }
+        
     }
+
+    htmlxxx = htmlxxx + """</tr>"""
     htmlyyy = htmlyyy + """</tr>"""
 
     body = """
