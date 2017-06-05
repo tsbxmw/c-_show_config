@@ -128,6 +128,7 @@ class Report(object):
         self.movetest = False
         self.flashwrongbuild = False
         self.stage_result = {}
+        self.movetestresult = True
 
 
     def createReport(self,test_name):
@@ -242,6 +243,8 @@ class Report(object):
                         
                     if mcjd["result"]:
                         mci = mci + 1
+                    else :
+                        self.movetestresult = False
                     i = i + 1
             if "gohome" in mcjdx:
                 for mcjd in mcjdx["gohome"]:
@@ -250,6 +253,8 @@ class Report(object):
                         
                     if "success" in mcjd["result"]:
                         ghi = ghi + 1
+                    else:
+                        self.movetestresult = False
                     j = j + 1
                     
         self.jsoninfo_movetest["success"] = mci
@@ -349,7 +354,11 @@ class Report(object):
         self.tStatistics.write("<tr height=\"100px\" bgcolor=\"#E8FFF5\" ><td>success</td>")
         for stage in allstages:
             if stage in runstages:
-                self.tStatistics.write("<td width=\"10%\">" + "complete" + "</th>")
+                if stage in "MoveTest":
+                    if !self.movetestresult:
+                        self.tStatistics.write("<td width=\"10%\">" + "Failed" + "</th>")
+                else:
+                    self.tStatistics.write("<td width=\"10%\">" + "complete" + "</th>")
             else:                
                 self.tStatistics.write("<td width=\"10%\">" + "norun" + "</th>")
                 
