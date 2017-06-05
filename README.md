@@ -26,7 +26,4 @@
     called version 0.41 here , just include something of auto test .
     the code of autotest is defined at base/script , based on groovy ,can be running at jenkins .
 
-## slamtest 
-
-    the test tool version 0.1 , now it move to other github project.
     
