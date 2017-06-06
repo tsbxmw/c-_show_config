@@ -4,15 +4,12 @@
 '''
 # before : pip install requests 
    it is useful to the zeus-edison device to get into debug and simulator mode
-   if u want to use to sdp , change the Simulator's  
-            ssh.Exec("mv /etc/sdp_ref_rplidar.json /home/root/sdp_ref.json ")
-            ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref_rplidar.json ")
-    to:
+   the default config file is /etc/sdp_ref.json
             ssh.Exec("mv /etc/sdp_ref.json /home/root/sdp_ref.json ")
             ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref.json ")
 # author : slamtec.inc - wei.meng
 # date   : 20170301
-# ver    : 1.7
+# ver    : 1.42
 # modify : 2017.03.02 - add info of data , change user_pass to self.unlock_info
 # modify : 2017.03.03 - change to root mode , delete the simulator mode
 # modify : 2017.03.09 - add new flag root 
