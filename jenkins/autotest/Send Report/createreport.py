@@ -355,8 +355,8 @@ class Report(object):
         for stage in allstages:
             if stage in runstages:
                 if stage in "MoveTest":
-                    if !self.movetestresult:
-                        self.tStatistics.write("<td width=\"10%\">" + "Failed" + "</th>")
+                    if not self.movetestresult:
+                        self.tStatistics.write("<td width=\"10%\"><font color=\"red\">" + "Failed" + "</font></th>")
                 else:
                     self.tStatistics.write("<td width=\"10%\">" + "complete" + "</th>")
             else:                
