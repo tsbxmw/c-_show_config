@@ -52,10 +52,35 @@ class Update(object):
             self.session.post(url=self.url_update,files=files)
             print ('[update] wait for update [240 s]')
             time.sleep(240)
-        except:
-            print ('[update - error ] wait for update [240 s]')
+        except Exception,e:
+            print "[update] <error> " + str(e)
             time.sleep(240)
-        
+        except:
+            print "[update] <error> wrong with update"
+            time.sleep(240)
+
+    def Update_1(self):
+        while True:
+            try:
+                files = {'file': open(self.firmware_path, 'rb')}
+                print '[update] load firmware file successfully, ready to upload firmware file'
+                startupdate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+                print '[ start time ] ' + str(startupdate) 
+                self.session.post(url=self.url_update,files=files)
+                print ('[update] wait for update [240 s]')
+                time.sleep(240)
+                break
+            except Exception,e:
+                print "[update] <error> " + str(e)
+                time.sleep(2)
+                continue
+            except:
+                print "[update] <error> wrong with update"
+                time.sleep(2)
+                continue
+
+
+            
     def Update_New(self):
         try:
             files = {'file':open(self.firmware_path,'rb')}
@@ -65,10 +90,32 @@ class Update(object):
             self.session.post(url=self.url_update_new,files=files)
             print '[update_new] wait for update [240 s]'
             time.sleep(240)
-        except :
-            print ('[update_new] error wait for 240 s')
+        except Exception,e:
+            print "[Update-new] <error> wrong with " + str(e)
             time.sleep(240)
-            
+        except:
+            print "[Update-new] <error> wrong with update"         
+            time.sleep(240)
+
+    def Update_New_1(self):
+        while True:
+            try:
+                files = {'file':open(self.firmware_path,'rb')}
+                print '[update_new] load the firmware file '
+                startupdate = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
+                print '[update_new - start time] ' + str(startupdate)
+                self.session.post(url=self.url_update_new,files=files)
+                print '[update_new] wait for update [240 s]'
+                time.sleep(240)
+                break
+            except Exception,e:
+                print "[Update-new] <error> wrong with " + str(e)
+                time.sleep(2)
+                continue
+            except:
+                print "[Update-new] <error> wrong with update"         
+                time.sleep(2)
+                continue
     
     def GetResult(self):
         while True:
@@ -140,9 +187,10 @@ class Update(object):
                     i = i + 1
                     continue
                 break
+
             self.Update()
             self.GetResult()
-                 
+
         except requests.exceptions.ConnectionError:
             print 'requests.exceptions.ConnectionError'
             sys.exit(1)
@@ -172,15 +220,14 @@ class Update(object):
                     time.sleep(10)
                     i = i + 1
                     continue
-                try:
-                    self.Update_New()
-                except:
-                    print ("[update_new][update] waitting for update successfully")
-                    time.sleep(10)
-                    i = i + 1
-                    continue
-                break
-                self.GetResult()
+                break   
+
+            self.Update_New()
+            self.GetResult()
+        
+        
+
+                
         
         except requests.exceptions.ConnectionError:
             print 'requests.exceptions.ConnectionError'
