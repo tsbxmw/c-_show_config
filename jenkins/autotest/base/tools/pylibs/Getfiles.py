@@ -3,7 +3,8 @@
 '''
 author : wei.meng @ slamtec.inc
 date : 2017.03.09
-version : 1.0
+version : 1.01
+modify : 20170606 - add function define "Getftpfile"
 '''
 import sys
 import os
@@ -23,3 +24,7 @@ class Getfiles(object):
         else:
             print ("[getfile] copy fail")
             exit(1)
+    
+    def Getftpfile(self,remote,local):
+        print ("[getftpfile] remote : " + str(remote))
+        print ("[getftpfile] local  : " + str(local))
