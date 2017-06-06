@@ -5,14 +5,14 @@ author : mengwei @ slamtec.com inc
 date : 20170313
 version : 2.0
 create report for all stage report - with new fuction to create stage report and statis report
-modify : 20170427 - add moveandcheck test report creator functor
+modify : 20170427 - add moveandcheck test report creator function
 '''
 import os, time, sys
 import cgi,re
 import json
 import shutil
 
-sys.path.append("pylib")
+#sys.path.append("pylib")
 from SSH import Ssh
 from debugmode import Root
 try: 
@@ -22,6 +22,7 @@ except ImportError:
 
 reload(sys)
 sys.setdefaultencoding( "utf-8")
+
 class Report(object):
 
     def __init__(self,testname):
