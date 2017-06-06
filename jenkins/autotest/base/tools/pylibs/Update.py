@@ -1,11 +1,12 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
-# version : v1.21
+# version : v1.22
 # authore : wei.meng @ slamtec.com
 # date    : 20170304
 # modify  : 20170503 - add update_new and runupdate_new function at the new slamware version 2.4.0_dev
 # modify  : 20170518 - /service/system/system_upgrade is the new action url.
+# modify  : 20170605 - bug fix , but not work.
 
 ####
 #   ip - slamware ip
@@ -58,7 +59,7 @@ class Update(object):
         except:
             print "[update] <error> wrong with update"
             time.sleep(240)
-
+    # do not work fine , when "bad line" issue coming , the expect always do the failed job .
     def Update_1(self):
         while True:
             try:
@@ -80,7 +81,7 @@ class Update(object):
                 continue
 
 
-            
+    # using for the new version check , 2.4.0_dev and higher would be work fine
     def Update_New(self):
         try:
             files = {'file':open(self.firmware_path,'rb')}
@@ -97,6 +98,7 @@ class Update(object):
             print "[Update-new] <error> wrong with update"         
             time.sleep(240)
 
+    # try to fix some bad line issue , but not work fine ,would fix it on new deal.
     def Update_New_1(self):
         while True:
             try:
