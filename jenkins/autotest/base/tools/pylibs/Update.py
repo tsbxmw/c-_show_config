@@ -54,11 +54,16 @@ class Update(object):
             print ('[update] wait for update [240 s]')
             time.sleep(240)
         except Exception,e:
-            print "[update] <error> " + str(e)
-            time.sleep(240)
-        except:
-            print "[update] <error> wrong with update"
-            time.sleep(240)
+            if "BadStatusLine" in str(e):
+                print "[update] <exception> " + str(e)       
+                time.sleep(240)        
+            else:
+                print "[update] <error> " + str(e)
+                time.sleep(10)
+                print "[update] try again ..."
+                self.Update()
+
+
     # do not work fine , when "bad line" issue coming , the expect always do the failed job .
     def Update_1(self):
         while True:
@@ -92,11 +97,14 @@ class Update(object):
             print '[update_new] wait for update [240 s]'
             time.sleep(240)
         except Exception,e:
-            print "[Update-new] <error> wrong with " + str(e)
-            time.sleep(240)
-        except:
-            print "[Update-new] <error> wrong with update"         
-            time.sleep(240)
+            if "BadStatusLine" in str(e):
+                print "[update] <exception> " + str(e)       
+                time.sleep(240)        
+            else:
+                print "[update] <error> " + str(e)
+                time.sleep(10)
+                print "[update] try again ..."
+                self.Update()
 
     # try to fix some bad line issue , but not work fine ,would fix it on new deal.
     def Update_New_1(self):
