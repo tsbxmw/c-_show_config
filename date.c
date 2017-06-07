@@ -168,11 +168,11 @@ void print_number(char *date){
                                printf("\033[1;34m%c",time[i][j]);
                              if(x==3)
                                printf("\033[1;35m%c",time[i][j]);
-                            if(x==4)
+                             if(x==4)
                                printf("\033[1;36m%c",time[i][j]);
-                            if(x==5)
+                             if(x==5)
                                printf("\033[1;37m%c",time[i][j]);
-                            if(x==6)
+                             if(x==6)
                                printf("\033[1;38m%c",time[i][j]);
                                
                             
