@@ -1,4 +1,10 @@
-
+/*
+// * this is daily build pipeline file 
+// * version : v0.41
+// * date : 20170614
+// * author : wei.meng @ slamtec 
+// * modify : 20170615 - bug fix - commit id get (submodules) , create the new job.
+*/
 def date_build 
 def version_build
 def commit_id = {}
@@ -93,7 +99,7 @@ branches["RPSG-RELEASE-slamwared_x1000-daily"] = {
     [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
     ]
 }
-
+// this is not master branch .... feature sweep_opt
 branches["RPSG-RELEASE-sweep_opt-slamwared_x1000-daily"] = {
     build 'RPSG-RELEASE-sweep_opt-slamwared_x1000-daily',parameters: [
     [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
