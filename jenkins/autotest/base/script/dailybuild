@@ -1,78 +1,40 @@
 
-def configENV()
-{
-    try { env.COMMIT_ID = "${COMMIT_ID}"               }catch(Exception e){}
-    try { env.DATE_OF_BUILD = "${DATE_OF_BUILD}"       }catch(Exception e){}
-    try { env.VERSION_OF_BUILD = "${VERSION_OF_BUILD}" }catch(Exception e){}
-}
-
-def checkoutGIT()
-{
-
-    checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], gitTool: 'Default', submoduleCfg: [], userRemoteConfigs: [[credentialsId: '6e519a56-9857-46cc-ad30-369cd6984189', url: 'https://stash.slamtec.com/scm/slam/topic_slamware_release.git']]])
-    //get commit id 
-}
-
-def getCommitID()
-{
-    sh 'git whatchanged --since="1 days ago" > gitchangelog.txt'
-    sh 'head -1 gitchangelog.txt > commitid.txt'
-    str1x = readFile 'commitid.txt'
-    str1 = strx.split(' ')
-    for(str in str1)
-    {
-        if (str.startsWith('commit'))
-            print "this is commit"
-        else
-            print str
-    }
-    return commitid
-}
-
-def getVersion()
-{
-    version = readFile 'scripts/version.txt'
-    return version
-}
-
-def getParamaters(commitid,date,version)
-{
-    // checkout the git , get the change log , 
-    if ("${COMMIT_ID}" == null )
-    {
-        commitid = getCommitID()
-    }
-
-    if ("${DATE_OF_BUILD}" == null)
-    {
-        date = new Date().format('yyyyMMdd')
-    }
-
-    if ("${VERSION_OF_BUILD}" == null)
-    {
-        version = getVersion()
-    }
-
-}
-
-def commit_id 
-def date_build
+def date_build 
 def version_build
+def commit_id = {}
 
 configENV()
 
 stage "Get Parameters"
-node('rsg' && 'i386-gcc4.6')
+node('rsg' && 'x86_64-gcc4.8')
 {
     //checkout
     // git log get the last commit id 
+    def modules = ["agent","sdp","firmwares/base","firmwares/cp0","firmwares/ui","firmwares/zeus","platforms/edison","platforms/phoenix"]
     checkoutGIT()
-    getParamaters(commit_id,date_build,version_build)
     // get the sha of the last commit 
+    commit_id = getCommitID()
+    print "${DATE_OF_BUILD}"
+    echo "${DATE_OF_BUILD}"
+    if ("${DATE_OF_BUILD}" == "")
+    {
+        date_build = new Date().format('yyyyMMdd')
+        print "DATE_OF_BUILD is null"
+    }
 
-    echo commit_id
-    echo date_build
-    echo version_build
+    if ("${VERSION_OF_BUILD}" == "")
+    {
+        version_build = getVersion()
+        print "VERSION_OF_BUILD is null"
+    }
+    
+    print date_build
+    print version_build
+    print commit_id
+    for (module in modules)
+    {
+        print commit_id[module]
+    }
 }
 
 stage "Stage One - Build "
@@ -80,55 +42,68 @@ stage "Stage One - Build "
 
 def branches = [:]
 
+// agent
 branches["RPSG-RELEASE-agent-daily"] = {
     build 'RPSG-RELEASE-agent-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["agent"] ],
     [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
     [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
     ]
 }
-
+//agent
 branches["RPSG-RELEASE-agent_x1000-daily"] = {
     build 'RPSG-RELEASE-agent_x1000-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["agent"]],
     [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
     [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
     ]
 }
-
+//sdp
 branches["RPSG-RELEASE-depthcam-daily"] = {
     build 'RPSG-RELEASE-depthcam-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"] ],
     [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
     [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
     ]
 }
+//firmwares base cp0 ui zeus
 branches["RPSG-RELEASE-firmwares-daily"] = {
     build 'RPSG-RELEASE-firmwares-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID_BASE', value: commit_id["firmwares/base"] ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID_CP0', value: commit_id["firmwares/cp0"] ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID_UI', value: commit_id["firmwares/ui"] ],
+    [$class: 'StringParameterValue', name: 'COMMIT_ID_ZEUS', value: commit_id["firmwares/zeus"] ],    
+    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
+    ]
+}
+//sdp
+branches["RPSG-RELEASE-slamwared-daily"] = {
+    build 'RPSG-RELEASE-slamwared-daily_new',parameters: [
+    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"] ],
     [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
     [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
     ]
 }
 
-branches["RPSG-RELEASE-slamwared-daily"] = {
-    build 'RPSG-RELEASE-slamwared-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id ],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
-    ]
-}
-/*
 branches["RPSG-RELEASE-slamwared_x1000-daily"] = {
-    build 'RPSG-RELEASE-slamwared_x1000-daily',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
+    build 'RPSG-RELEASE-slamwared_x1000-daily',parameters: [
+    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
+    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+    ]
 }
 
 branches["RPSG-RELEASE-sweep_opt-slamwared_x1000-daily"] = {
-    build 'RPSG-RELEASE-sweep_opt-slamwared_x1000-daily',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
+    build 'RPSG-RELEASE-sweep_opt-slamwared_x1000-daily',parameters: [
+    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
+    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+    ]
 }
 
 
-
+/*
 parallel branches
 
 
@@ -142,4 +117,71 @@ stage "Daily Build"
 }
 */
 
+
+
+
+def configENV()
+{
+    try { env.COMMIT_ID = "${COMMIT_ID}"               }catch(Exception e){}
+    try { env.DATE_OF_BUILD = "${DATE_OF_BUILD}"       }catch(Exception e){}
+    try { env.VERSION_OF_BUILD = "${VERSION_OF_BUILD}" }catch(Exception e){}
+}
+
+def checkoutGIT()
+{
+    checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+     doGenerateSubmoduleConfigurations: false, 
+     extensions: [[$class: 'SubmoduleOption', disableSubmodules:false, 
+                    parentCredentials: true, recursiveSubmodules: true, 
+                    reference: '', trackingSubmodules: false]],
+     gitTool: 'Default',
+     submoduleCfg: [],
+     userRemoteConfigs: [
+         [credentialsId: '6e519a56-9857-46cc-ad30-369cd6984189',
+         url: 'https://stash.slamtec.com/scm/slam/topic_slamware_release.git']
+     ]
+    ])
+    //get commit id 
+}
+
+def getCommitID()
+{
+    def currentdir = pwd()
+    def commit_idx = {}
+    dir(currentdir)
+    {
+        def submodules = ["agent","sdp","firmwares/base","firmwares/cp0","firmwares/ui","firmwares/zeus","platforms/edison","platforms/phoenix"]
+        
+        sh 'rm -rf ./master_changelog/*'
+        sh 'if [ ! -d "master_changelog" ] ; then mkdir master_changelog; fi'
+        sh 'if [ ! -d "master_changelog/firmwares" ] ; then mkdir master_changelog/firmwares ; fi'
+        sh 'if [ ! -d "master_changelog/platforms" ] ; then mkdir master_changelog/platforms ; fi'
+        for (submodule in submodules)
+        {
+
+            sh 'cd ' + submodule
+            //sh 'if [ ! -f "gitchangelog.txt" ] ; then rm -f gitchangelog ; fi'
+            sh 'git whatchanged --since="1 days ago" > gitchangelog.txt'
+            sh 'cp -f gitchangelog.txt ' + currentdir + '/master_changelog/' + submodule + '.log'
+            sh 'head -1 gitchangelog.txt > commitid.txt'
+            def strx = readFile 'commitid.txt'
+            def str1 = strx.split(' ')
+            for(str in str1)
+            {
+                if (str.startsWith('commit'))
+                    print "this is commit"
+                else
+                    commit_idx[submodule] = str
+            }
+        }
+    }
+    return commit_idx
+
+}
+
+def getVersion()
+{
+    version = readFile 'scripts/version.txt'
+    return version
+}
 
