@@ -1,10 +1,4 @@
-/*
-// * this is daily build pipeline file 
-// * version : v0.41
-// * date : 20170614
-// * author : wei.meng @ slamtec 
-// * modify : 20170615 - bug fix - commit id get (submodules) , create the new job.
-*/
+
 def date_build 
 def version_build
 def commit_id = {}
@@ -36,9 +30,10 @@ node('rsg' && 'x86_64-gcc4.8')
     
     print date_build
     print version_build
-    print commit_id
+    
     for (module in modules)
     {
+        print module
         print commit_id[module]
     }
 }
@@ -47,81 +42,252 @@ stage "Stage One - Build "
 
 
 def branches = [:]
-
+def build_times = "${REBUILD_TIMES}"
+def path_of_release = "${DAILY_FOLDER}"
+def path_share_release = "\\\\10.254.0.3\\Share\\test_release\\daily"
+def results_of_stage_one = {}
 // agent
-branches["RPSG-RELEASE-agent-daily"] = {
-    build 'RPSG-RELEASE-agent-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["agent"] ],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
-    ]
+branches['RPSG-RELEASE-agent-daily'] = {
+    int i = 0
+    while (i < build_times)
+    {
+        echo "build times --- " + i
+        def result = []
+        result = build job:'RPSG-RELEASE-agent-daily_new',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["agent"] ],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+
+            results_of_stage_one["RPSG-RELEASE-agent-daily"] = "success"
+            echo "Test Daily Successful !"
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            results_of_stage_one["RPSG-RELEASE-agent-daily"] = "failed"
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+
+    }
+    
 }
 //agent
-branches["RPSG-RELEASE-agent_x1000-daily"] = {
-    build 'RPSG-RELEASE-agent_x1000-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["agent"]],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
-    ]
+branches['RPSG-RELEASE-agent_x1000-daily'] = {
+    int i = 0
+    while(i < build_times)
+    {
+        def result = build job: 'RPSG-RELEASE-agent_x1000-daily_new',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["agent"]],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+            results_of_stage_one["RPSG-RELEASE-agent_x1000-daily"] = true
+            echo "Test Daily Successful !"
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            results_of_stage_one["RPSG-RELEASE-agent_x1000-daily"] = false
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+    }
 }
 //sdp
-branches["RPSG-RELEASE-depthcam-daily"] = {
-    build 'RPSG-RELEASE-depthcam-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"] ],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
-    ]
+branches['RPSG-RELEASE-depthcam-daily'] = {
+    int i = 0
+    while(i < build_times)
+    {
+        def result = build job:'RPSG-RELEASE-depthcam-daily_new',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"] ],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+            results_of_stage_one["RPSG-RELEASE-depthcam-daily"] = true
+            echo "Test Daily Successful !"
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            results_of_stage_one["RPSG-RELEASE-depthcam-daily"] = false
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+    }
+    
 }
 //firmwares base cp0 ui zeus
-branches["RPSG-RELEASE-firmwares-daily"] = {
-    build 'RPSG-RELEASE-firmwares-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID_BASE', value: commit_id["firmwares/base"] ],
-    [$class: 'StringParameterValue', name: 'COMMIT_ID_CP0', value: commit_id["firmwares/cp0"] ],
-    [$class: 'StringParameterValue', name: 'COMMIT_ID_UI', value: commit_id["firmwares/ui"] ],
-    [$class: 'StringParameterValue', name: 'COMMIT_ID_ZEUS', value: commit_id["firmwares/zeus"] ],    
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
-    ]
+branches['RPSG-RELEASE-firmwares-daily'] = {
+    int i = 0
+    while(i < build_times)
+    {
+
+        def result = build job:'RPSG-RELEASE-firmwares-daily_new',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID_BASE', value: commit_id["firmwares/base"] ],
+        [$class: 'StringParameterValue', name: 'COMMIT_ID_CP0', value: commit_id["firmwares/cp0"] ],
+        [$class: 'StringParameterValue', name: 'COMMIT_ID_UI', value: commit_id["firmwares/ui"] ],
+        [$class: 'StringParameterValue', name: 'COMMIT_ID_ZEUS', value: commit_id["firmwares/zeus"] ],    
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_share_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+            results_of_stage_one["RRPSG-RELEASE-firmwares-daily"] = true
+            echo "Test Daily Successful !"
+
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            results_of_stage_one["RPSG-RELEASE-firmwares-daily"] = false
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+    }
+
 }
 //sdp
-branches["RPSG-RELEASE-slamwared-daily"] = {
-    build 'RPSG-RELEASE-slamwared-daily_new',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"] ],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build]
-    ]
+branches['RPSG-RELEASE-slamwared-daily'] = {
+    int i = 0
+    while(i < build_times)
+    {
+        def result = build job:'RPSG-RELEASE-slamwared-daily_new',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"] ],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+            results_of_stage_one["RPSG-RELEASE-slamwared-daily"] = true
+            echo "Test Daily Successful !"
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            results_of_stage_one["RPSG-RELEASE-slamwared-daily"] = false
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+    }
+    
 }
 
-branches["RPSG-RELEASE-slamwared_x1000-daily"] = {
-    build 'RPSG-RELEASE-slamwared_x1000-daily',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
-    ]
+branches['RPSG-RELEASE-slamwared_x1000-daily'] = {
+    int i = 0
+    while(i < build_times)
+    {
+        def result = build job:'RPSG-RELEASE-slamwared_x1000-daily',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+            results_of_stage_one["RPSG-RELEASE-slamwared_x1000-daily"] = true
+            echo "Test Daily Successful !"
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            results_of_stage_one["RPSG-RELEASE-slamwared_x1000-daily"] = false
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+    }
+    
 }
-// this is not master branch .... feature sweep_opt
-branches["RPSG-RELEASE-sweep_opt-slamwared_x1000-daily"] = {
-    build 'RPSG-RELEASE-sweep_opt-slamwared_x1000-daily',parameters: [
-    [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
-    [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
-    [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
-    ]
-}
-
-
 /*
+branches["RPSG-RELEASE-sweep_opt-slamwared_x1000-daily"] = {
+    int i = 0
+    while(i < build_times)
+    {
+        build 'RPSG-RELEASE-sweep_opt-slamwared_x1000-daily',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["sdp"]],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+        if(result["result"] == "SUCCESS")
+        {
+            echo "Test Daily Successful !"
+            echo "-----------------------------------------------------"
+            break
+        }
+        else{
+            echo "Test Daily Failed !"
+            echo "-----------------------------------------------------"
+            echo "try times - " + i
+            i = i + 1
+        }
+    }
+    
+}
+*/
 parallel branches
 
 
-stage "Daily Build"
+stage "Daily Build edison x1000"
+def package_build = [:]
 
-{
-    build 'RPSG-RELEASE-edison-daily',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
-    build 'RPSG-RELEASE-x1000-daily',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
-    build 'RPSG-RELEASE-sweep_opt-system_x1000-daily-test',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
-
+package_build["RPSG-RELEASE-edison-daily"] = {
+    if(results_of_stage_one["RPSG-RELEASE-agent-daily"] && results_of_stage_one["RPSG-RELEASE-depthcam-daily"] && results_of_stage_one["RPSG-RELEASE-firmwares-daily"] && results_of_stage_one["RPSG-RELEASE-slamwared-daily"])
+    {
+        def result =  build job:'RPSG-RELEASE-edison-daily',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["platforms/edison"]],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]]
+    }
 }
-*/
+
+package_build["RPSG-RELEASE-x1000-daily"] = {
+    
+    if(results_of_stage_one["RPSG-RELEASE-agent_x1000-daily"] && results_of_stage_one["RPSG-RELEASE-firmwares-daily"]
+        && results_of_stage_one["RPSG-RELEASE-slamwared_x1000-daily"] )
+    {
+        def result = build job:'RPSG-RELEASE-x1000-daily',parameters: [
+        [$class: 'StringParameterValue', name: 'COMMIT_ID', value: commit_id["platforms/phoenix"]],
+        [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: date_build],
+        [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: version_build],
+        [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: path_of_release]
+        ]
+    }
+    
+}
+
+parallel package_build
+
+//    build 'RPSG-RELEASE-x1000-daily',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
+//    build 'RPSG-RELEASE-sweep_opt-system_x1000-daily-test',parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: COMMIT_ID]]
+
+
+
 
 
 
@@ -131,6 +297,7 @@ def configENV()
     try { env.COMMIT_ID = "${COMMIT_ID}"               }catch(Exception e){}
     try { env.DATE_OF_BUILD = "${DATE_OF_BUILD}"       }catch(Exception e){}
     try { env.VERSION_OF_BUILD = "${VERSION_OF_BUILD}" }catch(Exception e){}
+
 }
 
 def checkoutGIT()
