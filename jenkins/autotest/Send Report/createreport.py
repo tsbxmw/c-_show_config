@@ -3,7 +3,7 @@
 '''
 # author : wei.meng @ slamtec.inc
 # date : 20170307
-# version : 1.7
+# version : 1.8
 # modify : 20170311 - add css to html 
 # modify : 20170313 - add create Flash One Build 
 # modify : 20170323 - add create Daily Build
@@ -11,6 +11,7 @@
 # modify : 20170407 - add create Flash Dwon and Up build 
 # modify : 20170517 - add new stage report to summary - the daily build stage report
 # modify : 20170524 - add new stage info : Flash Wrong Build to the []
+# modify : 20170620 - add new func : the change log information 
 '''
 import os, time, sys
 import cgi,re
@@ -365,7 +366,43 @@ class Report(object):
         self.tStatistics.write("</tr>\n</table>")
         
         
-    
+    def addChangelog(self):
+
+def getchangelog(self):
+    infos=[]
+    f = open("gitchangelog.txt","r")
+    i = 0
+    for line in f.readlines():
+        if i == 0 and line.startswith("commit"):
+            i = 1
+            loginfo = {}
+            commit,loginfo["id"] = line.split(" ")
+        if i == 1 and line.startswith("Author"):
+            author,loginfo["name"],loginfo["email"] = line.split(" ")
+        if i == 1 and line.startswith("Date"):
+            print line.split(' ')
+            date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
+        if i == 1 and line.startswith(":"):
+            loginfo["infos"] = line
+            i = 0
+            infos.append(loginfo)
+        if i == 1 and line.startswith("Signed-off-by"):
+            print "do not need "
+        if i == 1 and line != "\n":
+            loginfo["message"] = line
+    f.close()
+    self.tStatistics.write("""
+        <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">
+        <tr><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
+        """)
+    for f in infos:
+        print f
+        f["email"] = f["email"].replace("<","")
+        f["email"] = f["email"].replace(">","")
+        self.tStatistics.write("<tr><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["message"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
+
+    self.tStatistics.write("</table>")
+
 
     def endReport(self):
         self.tStatistics.write( self.html5)
