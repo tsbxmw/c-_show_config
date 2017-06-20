@@ -3,6 +3,7 @@ Rsg-slave2 = armv7hf-gcc4.8 i386-gcc4.8 rsg ubuntu-14.04
 Rsg-slave3 = rsg vs10 windows_server-2012r2
 Rsg-slave4 = armv7hf-gcc4.8 mipsel-gcc rsg ubuntu-14.04 x86_64-gcc4.8
 Rsg-slave5 = docker dotnet-1_1_1 rsg ubuntu-16.04
+Rsg-slave6 = armv7hf-gcc4.8 mipsel-gcc rsg ubuntu-14.04 x86_64-gcc4.8
 Rsg-slave7 = ZEUS_TEST windows_server-2012r2
 
 1. RPSG-RELEASE-agent-daily        		12.04 32    rsg && i386-gcc4.6   Rsg-slave1 			agent
