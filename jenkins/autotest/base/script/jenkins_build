@@ -6,6 +6,7 @@ def version
 def date
 def result=[]
 def buildname
+def stageoftest
 //----------------------------------------------------------------------
 
 stage 'Get Build Info'
@@ -19,8 +20,8 @@ node('rsg' && 'i386-gcc4.6')
 }
 
 node('Rsg-slave7'){
-    
-    
+    echo version
+    echo date
     
     if(!BuildDaily())
     {
@@ -29,6 +30,21 @@ node('Rsg-slave7'){
     }
     else
     {
+        if("${TEST_NAME}" == "Daily Test")
+        {
+            stageoftest = """Flash Daily Build\nFlash Wrong Build\nMoveTest\nSend Report"""
+        }
+        if("${TEST_NAME}" == "Flash Test")
+        {
+            stageoftest = """Flash Daily Build\nFlash Wrong Build\nSend Report"""
+        }
+        if("${TEST_NAME}" == "Move Test")
+        {
+            stageoftest = """MoveTest\nSend Report"""
+        }
+        
+        
+        stage "Build Daily Test"
         def versionname = 'zeus_edison.' + version.minus('\n') + '.' + date + '.bin'
         echo versionname
         def SHARE_PATH = '\\\\10.254.0.3\\share\\release\\daily\\'
@@ -41,15 +57,15 @@ node('Rsg-slave7'){
         def COUNT_OF_ONEBUILD = '5'
         def NAME_OF_ONEBUILD = SHARE_PATH + "zeus\\" + date + "\\" + versionname
         def COUNT_OF_DOWNUP = '2'
-        def NAME_OF_DOWNBUILD = SHARE_PATH + "zeus\\" + date + "\\" + versionname
-        def NAME_OF_UPBUILD = SHARE_PATH + "zeus\\" + date + "\\" + versionname
+        def NAME_OF_DOWNBUILD = "None" // = SHARE_PATH + "zeus\\" + date + "\\" + versionname
+        def NAME_OF_UPBUILD = "None" //= SHARE_PATH + "zeus\\" + date + "\\" + versionname
         def MAIL_TO = 'wei.meng@slamtec.com'
         def MAIL_CC = 'wei.meng@slamtec.com'
         def FAIL_MAIL_TO = 'wei.meng@slamtec.com'
         def BUILD_RESULT = 'success'
-        def TEST_STAGES =  "${TEST_STAGES}"
+        def TEST_STAGES =  stageoftest
         
-        testresult = build job: 'ZEUS_AUTOTEST', parameters: [[$class: 'StringParameterValue', name: 'PRODUCT_NAME', value: 'ZEUS_TEST'],[$class: 'StringParameterValue', name: 'TEST_NAME', value: 'ZEUS_DAILY'], [$class: 'TextParameterValue', name: 'TEST_STAGES', value:TEST_STAGES], [$class: 'StringParameterValue', name: 'IP_SLAMWARE', value: IP_SLAMWARE], [$class: 'StringParameterValue', name: 'SLAMWARE_PATH', value: SLAMWARE_PATH], [$class: 'StringParameterValue', name: 'NAME_OF_WRONGBUILD', value: NAME_OF_WRONGBUILD], [$class: 'StringParameterValue', name: 'COUNT_OF_ONEBUILD', value: COUNT_OF_ONEBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_ONEBUILD', value: NAME_OF_ONEBUILD],[$class: 'StringParameterValue', name: 'COUNT_OF_DOWNUP', value: COUNT_OF_DOWNUP ], [$class: 'StringParameterValue', name: 'NAME_OF_DOWNBUILD', value:NAME_OF_DOWNBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_UPBUILD', value: NAME_OF_UPBUILD ],[$class: 'StringParameterValue', name: 'MAIL_TO', value: MAIL_TO],[$class: 'StringParameterValue', name: 'MAIL_CC', value: MAIL_CC], [$class: 'StringParameterValue', name: 'FAIL_MAIL_TO', value: FAIL_MAIL_TO],[$class: 'StringParameterValue', name: 'BUILD_RESULT', value: BUILD_RESULT]],propagate: false
+        testresult = build job: 'ZEUS_AUTOTEST', parameters: [[$class: 'StringParameterValue', name: 'PRODUCT_NAME', value: 'ZEUS_TEST'],[$class: 'StringParameterValue', name: 'TEST_NAME', value: "${TEST_NAME}"], [$class: 'TextParameterValue', name: 'TEST_STAGES', value:TEST_STAGES], [$class: 'StringParameterValue', name: 'IP_SLAMWARE', value: IP_SLAMWARE], [$class: 'StringParameterValue', name: 'SLAMWARE_PATH', value: SLAMWARE_PATH], [$class: 'StringParameterValue', name: 'NAME_OF_WRONGBUILD', value: NAME_OF_WRONGBUILD], [$class: 'StringParameterValue', name: 'COUNT_OF_ONEBUILD', value: COUNT_OF_ONEBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_ONEBUILD', value: NAME_OF_ONEBUILD],[$class: 'StringParameterValue', name: 'COUNT_OF_DOWNUP', value: COUNT_OF_DOWNUP ], [$class: 'StringParameterValue', name: 'NAME_OF_DOWNBUILD', value:NAME_OF_DOWNBUILD], [$class: 'StringParameterValue', name: 'NAME_OF_UPBUILD', value: NAME_OF_UPBUILD ],[$class: 'StringParameterValue', name: 'MAIL_TO', value: MAIL_TO],[$class: 'StringParameterValue', name: 'MAIL_CC', value: MAIL_CC], [$class: 'StringParameterValue', name: 'FAIL_MAIL_TO', value: FAIL_MAIL_TO],[$class: 'StringParameterValue', name: 'BUILD_RESULT', value: BUILD_RESULT]],propagate: false
         if(testresult["result"] == "SUCCESS")
         {
             echo "Test Daily Successful !"
@@ -58,14 +74,10 @@ node('Rsg-slave7'){
         else{
             echo "Test Daily Failed !"
             echo "-----------------------------------------------------"
+            
         }
     }
-    //echo result["startTimeInMillis"]
-    //echo result["duration"]
-    //bat "if exist checkout ( rd /s /q checkout & md checkout ) else ( md checkout )"
-   // bat "if exist checkout ( cd checkout & git pull https://wei.meng:TdCnps1o@stash.slamtec.com/scm/zeus/topic_zeus_test.git ) else ( md checkout & git clone https://wei.meng:TdCnps1o@stash.slamtec.com/scm/zeus/topic_zeus_test.git checkout\\ )"
-//checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '6e519a56-9857-46cc-ad30-369cd6984189', url: 'https://stash.slamtec.com/scm/zeus/topic_zeus_test.git']]])
-   // bat "git clone https://wei.meng:TdCnps1o@stash.slamtec.com/scm/zeus/topic_zeus_test.git checkout\\ "
+   
 }
 
 
@@ -73,10 +85,19 @@ node('Rsg-slave7'){
 def BuildDaily(){
 
     // daily build of zeus master branch
-    stage 'Daily Build'
-    stage "Build Daily Test"
-    buildname = 'TEST_SCRIPT'
-    result = build job: buildname, parameters: [[$class: 'StringParameterValue', name: 'TEST_STAGES', value: 'Flash Daily Build']], propagate: false
+    stage '\u001B[32m Daily Build'
+
+    buildname = 'Build-RPSG-RELEASE-Master'
+    //result = build job: buildname, parameters: [[$class: 'StringParameterValue', name: 'TEST_STAGES', value: 'Flash Daily Build']], propagate: false
+    result = build job: 'Build-RPSG-RELEASE-Master',
+                parameters: [[$class: 'StringParameterValue', name: 'COMMIT_ID', value: ''], 
+                [$class: 'StringParameterValue', name: 'VERSION_OF_BUILD', value: ''], 
+                [$class: 'StringParameterValue', name: 'DATE_OF_BUILD', value: ''],
+                [$class: 'StringParameterValue', name: 'DAILY_FOLDER', value: "$DAILY_FOLDER"], 
+                [$class: 'StringParameterValue', name: 'REBUILD_TIMES', value: '3']
+                [$class: 'StringParameterValue', name: 'SHARE_PATH', value: "$SHARE_PATH"]
+                ], propagate: false
+
     echo result["buildVariables"]
     echo result["result"]
     echo result["id"]
@@ -95,7 +116,13 @@ def BuildDaily(){
     }
 
 }
-
+def getchangelog()
+{
+    def date = new Date().format('yyyyMMdd')
+    bat 'copy \\\\10.254.0.3\\share\\test_release\\daily\\changelog\\' + date + '\\gitchangelog.txt .\\gitchangelog.txt'
+    def changelog = readFile '.\\gitchangelog.txt'
+    return changelog
+}
 def creatfail(){
     subjects = "Build Daily Failed!"
     body = """
@@ -115,7 +142,13 @@ def creatfail(){
                 <tr align="center" bgcolor="#F0F80F" height="10px" style="color:blue"><th width="15%">build name</th><th width="15%">build number</th><th width="15%">build result</th><th width="55%">build url</th></tr>
                 <tr align="center" bgcolor="#F0F8FF" height="40px" style="color:black"><td width="15%">"""+ buildname +"""</td><td width="15%">"""+ result["id"] +"""</td><td width="15%">"""+result["result"] +"""</td><td width="55%">""" + result["absoluteUrl"] + """ </td></tr>
                 </table>
+                <table border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+
+                <tr align="center" bgcolor="#000800" height="10px" style="color:white"><th> commit </th></tr>
+                <tr align="center" bgcolor="#FFFFFF" height="10px" style="color:black"><th>""" + getchangelog() +""" </th></tr>
                 
+                
+                </table>
             </div>
         </body>
     </html>
