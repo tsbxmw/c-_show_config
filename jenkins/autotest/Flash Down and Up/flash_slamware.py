@@ -102,7 +102,7 @@ if __name__ == "__main__":
             infos["down_begin"] = str(begindown)
             time_use1 = datetime.now()
             #-----------------------up is info ---------#
-            if "2.4" in str(version_before) :
+            if update.checkversionurl(str(version_before)):
                 updatedown.RunUpdate_New()
             else:
                 updatedown.RunUpdate()
@@ -133,7 +133,7 @@ if __name__ == "__main__":
             infos["up_begin"] = str(beginup)
             time_use1 = datetime.now()
             #-----------------------up is info ---------#
-            if "2.4" in str(version_before) :
+            if update.checkversionurl(str(version_before)) :
                 updateup.RunUpdate_New()
             else:
                 updateup.RunUpdate()

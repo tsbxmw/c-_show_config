@@ -7,6 +7,7 @@
 # modify  : 20170503 - add update_new and runupdate_new function at the new slamware version 2.4.0_dev
 # modify  : 20170518 - /service/system/system_upgrade is the new action url.
 # modify  : 20170605 - bug fix , but not work.
+# modify  : 20170621 - add new version check , if version >= 2.4 , using the url _ new
 
 ####
 #   ip - slamware ip
@@ -63,7 +64,15 @@ class Update(object):
                 print "[update] try again ..."
                 self.Update()
 
-
+    def checkversionurl(self,currentversion):
+        versioninfo = ["2.4","2.5","2.6","2.7","2.8","2.9","3.0"]
+        newback = False
+        for f in versioninfo:
+            print "[update]-[check current] " + f
+            if f in currentversion:
+                newback = True
+                break
+        return newback
     # do not work fine , when "bad line" issue coming , the expect always do the failed job .
     def Update_1(self):
         while True:

@@ -1,12 +1,13 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
-author : wei.meng @ slamtec.inc
-date : 2017.03.09
-version : 1.4
-modify : 20170420 - add run the script remove_version.sh
-modify : 20170421 - remove the run of the remove_version.sh
-#modify : 20170518 - add judgement to the update funtion : RunUpdate . RunUpdate_New
+# author : wei.meng @ slamtec.inc
+# date : 2017.03.09
+# version : 1.41
+# modify : 20170420 - add run the script remove_version.sh
+# modify : 20170421 - remove the run of the remove_version.sh
+# modify : 20170518 - add judgement to the update funtion : RunUpdate . RunUpdate_New
+# modify : 20170621 - replace the 'if in ' with update.checkversionurl
 '''
 
 import sys
@@ -82,7 +83,7 @@ if __name__ == "__main__":
             beginupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
             infos["begin"] = str(beginupdate)
             time_use1 = datetime.now()
-            if "2.4" in str(version_before) :
+            if update.checkversionurl(str(version_before)) :
                 update.RunUpdate_New()
             else:
                 update.RunUpdate()

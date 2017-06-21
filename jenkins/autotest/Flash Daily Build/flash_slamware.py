@@ -57,7 +57,8 @@ if __name__ == "__main__":
         jsoninfo["begin"] = str(beginupdate)
         #output.write("begin=" + str(beginupdate) + "\n")
         time_use1 = datetime.now()
-        if "2.4" in str(check.getversion()):
+        str_version = str(check.getversion())
+        if update.checkversionurl(str_version):
             update.RunUpdate_New()
         else:
             update.RunUpdate()

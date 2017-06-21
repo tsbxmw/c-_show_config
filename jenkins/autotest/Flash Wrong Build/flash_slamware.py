@@ -5,9 +5,10 @@
 '''
 # author : wei.meng @ slamtec.inc
 # date : 2017.03.09
-# version : 1.2
+# version : 1.21
 # modify : 2017.05.24 - add 2.4 version check before update
 # modify : 2017.05.27 - double check the version : b_v == a_v and a_v != f_n
+# modify : 20170621 - replace the 'if in ' with the 'update.checkversionurl'
 '''
 
 import sys
@@ -58,7 +59,7 @@ if __name__ == "__main__":
         beginupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
         jsoninfo["begin"] = str(beginupdate)
         time_use1 = datetime.now()
-        if '2.4' in thisversion:
+        if update.checkversionurl(thisversion):
             update.RunUpdate_New()
         else:
             update.RunUpdate()
