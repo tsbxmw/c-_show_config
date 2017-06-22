@@ -26,4 +26,6 @@
     called version 0.41 here , just include something of auto test .
     the code of autotest is defined at base/script , based on groovy ,can be running at jenkins .
 
+    now also want to build a stable version 1.0 to using the auto test on a exe or jenkins or other website ...
+
     
