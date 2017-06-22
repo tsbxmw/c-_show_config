@@ -366,42 +366,41 @@ class Report(object):
         self.tStatistics.write("</tr>\n</table>")
         
         
-    def addChangelog(self):
 
-def getchangelog(self):
-    infos=[]
-    f = open("gitchangelog.txt","r")
-    i = 0
-    for line in f.readlines():
-        if i == 0 and line.startswith("commit"):
-            i = 1
-            loginfo = {}
-            commit,loginfo["id"] = line.split(" ")
-        if i == 1 and line.startswith("Author"):
-            author,loginfo["name"],loginfo["email"] = line.split(" ")
-        if i == 1 and line.startswith("Date"):
-            print line.split(' ')
-            date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
-        if i == 1 and line.startswith(":"):
-            loginfo["infos"] = line
-            i = 0
-            infos.append(loginfo)
-        if i == 1 and line.startswith("Signed-off-by"):
-            print "do not need "
-        if i == 1 and line != "\n":
-            loginfo["message"] = line
-    f.close()
-    self.tStatistics.write("""
-        <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">
-        <tr><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
-        """)
-    for f in infos:
-        print f
-        f["email"] = f["email"].replace("<","")
-        f["email"] = f["email"].replace(">","")
-        self.tStatistics.write("<tr><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["message"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
+    def getchangelog(self):
+        infos=[]
+        f = open("gitchangelog.txt","r")
+        i = 0
+        for line in f.readlines():
+            if i == 0 and line.startswith("commit"):
+                i = 1
+                loginfo = {}
+                commit,loginfo["id"] = line.split(" ")
+            if i == 1 and line.startswith("Author"):
+                author,loginfo["name"],loginfo["email"] = line.split(" ")
+            if i == 1 and line.startswith("Date"):
+                print line.split(' ')
+                date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
+            if i == 1 and line.startswith(":"):
+                loginfo["infos"] = line
+                i = 0
+                infos.append(loginfo)
+            if i == 1 and line.startswith("Signed-off-by"):
+                print "do not need "
+            if i == 1 and line != "\n":
+                loginfo["message"] = line
+        f.close()
+        self.tStatistics.write("""
+            <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">
+            <tr><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
+            """)
+        for f in infos:
+            print f
+            f["email"] = f["email"].replace("<","")
+            f["email"] = f["email"].replace(">","")
+            self.tStatistics.write("<tr><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["message"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
 
-    self.tStatistics.write("</table>")
+        self.tStatistics.write("</table>")
 
 
     def endReport(self):
@@ -441,10 +440,15 @@ if __name__ == "__main__":
         report.getadd_Flash_Wrong_Build_Info()
     if "MoveTest" in teststage:
         report.getadd_MoveTest_Info()
+
+
+
     
     report.addBuildInfo()
     report.getDeviceInfo(ip)
     report.addDeviceInfo()
     report.addMoveInfo()
     report.addInfo()
+    if os.path.exists("gitchangelog.txt"):
+        report.getchangelog()
     report.endReport()

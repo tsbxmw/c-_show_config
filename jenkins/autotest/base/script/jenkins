@@ -168,7 +168,7 @@ def configEnv() {
         echo env.PYTHONPATH
         env.REPORT_DIR = pwd() + "\\report"
         env.PATH = pwd() + "\\base\\tools\\win32tools;" + pwd() + "\\base\\tools\\ant\\bin;${env.PATH}"
-    env.PYTHONUNBUFFERED="1"
+        env.PYTHONUNBUFFERED="1"
 }
 
 //do not complete this function
@@ -194,7 +194,7 @@ def publishFailed(stage_name,errorinfo) {
             //not complete
             bat 'copy \"' + t + '\\log\\\"* ' + "\"testdata\\report\\log\\" + t + "\\\""
             
-            reportFiles = reportFiles + t +".html,"
+            //reportFiles = reportFiles + t +".html,"
         }
         else
         {
