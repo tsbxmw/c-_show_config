@@ -28,4 +28,11 @@
 
     now also want to build a stable version 1.0 to using the auto test on a exe or jenkins or other website ...
 
+## something else
+
+    try to build a new wall-paper to version2.0 , update the date_new.c to show more and more information .
+    like android , using some setting to config it .
+    
+
+
     
