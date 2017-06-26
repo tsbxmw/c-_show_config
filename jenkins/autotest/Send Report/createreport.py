@@ -3,12 +3,15 @@
 '''
 # author : wei.meng @ slamtec.inc
 # date : 20170307
-# version : 1.6
+# version : 1.8
 # modify : 20170311 - add css to html 
 # modify : 20170313 - add create Flash One Build 
 # modify : 20170323 - add create Daily Build
 # modify : 20170327 - change to json
-# modify : 20170407 -  add create Flash Dwon and Up build 
+# modify : 20170407 - add create Flash Dwon and Up build 
+# modify : 20170517 - add new stage report to summary - the daily build stage report
+# modify : 20170524 - add new stage info : Flash Wrong Build to the []
+# modify : 20170620 - add new func : the change log information 
 '''
 import os, time, sys
 import cgi,re
@@ -122,6 +125,11 @@ class Report(object):
         self.deviceinfo = {}
         self.flashonebuild = False
         self.flashdailybuild = False
+        self.flashdownandupbuild = False
+        self.movetest = False
+        self.flashwrongbuild = False
+        self.stage_result = {}
+        self.movetestresult = True
 
 
     def createReport(self,test_name):
@@ -204,11 +212,81 @@ class Report(object):
                 self.jsoninfo_flashdownandupbuild["version_after"] = info["up_values"]["version_up_after"]
                 self.jsoninfo_flashdownandupbuild["end"] = info["up_values"]["up_end"]
         self.flashdownandupbuild = True
-
-
+        
+    def byteify(self,input):
+        if isinstance(input, dict):
+            return {self.byteify(key): self.byteify(value) for key, value in input.iteritems()}
+        elif isinstance(input, list):
+            return [self.byteify(element) for element in input]
+        elif isinstance(input, unicode):
+            return input.encode('utf-8')
+        else:
+            return input
+            
+    def getadd_MoveTest_Info(self):
+        self.jsoninfo_gohome = {}
+        self.jsoninfo_movetest = {}
+        output = open("..\\testdata\\report\\json\\MoveTest.json",'r')
+        macjsondata = json.loads(output.readline().decode('utf-8'),encoding='utf-8')
+        output.close()
+        majd = self.byteify(macjsondata)
+        mci = 0
+        i = 0
+        j = 0
+        ghi = 0
+        for mcjdx in majd:
+            
+            
+            if "moveandcheck" in mcjdx:
+                for mcjd in mcjdx["moveandcheck"]:
+                    if i == 0:
+                        self.jsoninfo_movetest["time"] = mcjd["timenow"]
+                        
+                    if mcjd["result"]:
+                        mci = mci + 1
+                    else :
+                        self.movetestresult = False
+                    i = i + 1
+            if "gohome" in mcjdx:
+                for mcjd in mcjdx["gohome"]:
+                    if j == 0:
+                        self.jsoninfo_gohome["time"] = mcjd["timenow"]
+                        
+                    if "success" in mcjd["result"]:
+                        ghi = ghi + 1
+                    else:
+                        self.movetestresult = False
+                    j = j + 1
+                    
+        self.jsoninfo_movetest["success"] = mci
+        self.jsoninfo_movetest["all"] = i
+        self.jsoninfo_gohome["success"] = ghi
+        self.jsoninfo_gohome["all"] = j
+        print self.jsoninfo_movetest
+        print self.jsoninfo_gohome
+        self.movetest = True
+        
+    #{"begin": "2017-04-06-12:19:57", "end": "2017-04-06-12:22:19", "timeuse": "141", 
+    #"version_before": "2.3.0_beta-zeus-20170406", "version_file": "wrongbuild.txt", 
+    #"remote_path": "\\\\10.254.0.3\\share\\temp\\mengwei\\wrongbuild.txt"}
+    def getadd_Flash_Wrong_Build_Info(self):
+        self.jsoninfo_flashwrongbuild = {}
+        output = open("..\\testdata\\report\\json\\Flash Wrong Build.json",'r')
+        macjsondata = json.load(output)
+        output.close()
+        majd = self.byteify(macjsondata)
+        self.jsoninfo_flashwrongbuild["begin"] = majd["begin"]
+        self.jsoninfo_flashwrongbuild["end"] = majd["end"]
+        self.jsoninfo_flashwrongbuild["version_before"] = majd["version_before"]
+        self.jsoninfo_flashwrongbuild["remote_path"] = majd["remote_path"]
+        self.jsoninfo_flashwrongbuild["version_file"] = majd["version_file"]
+        self.jsoninfo_flashwrongbuild["timeuse"] = majd["timeuse"]        
+        self.jsoninfo_flashwrongbuild["version_after"] = majd["version_after"]
+        self.flashwrongbuild = True
+        
     def addDeviceInfo(self):
         self.tStatistics.write("<div><br/></div><h2>Device Info</h2>\n")
-        self.tStatistics.write("<table class=\"general\" border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+        self.tStatistics.write("<table class=\"general\" align=center border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
         self.tStatistics.write("<tr><th width=\"20%\">Name</th><th width=\"30%\">Value</th><th width=\"20%\">Name</th><th width=\"30%\">Value</th></tr>\n")
         self.tStatistics.write("<tr><td>FirmWare version </td> <td>" + str(self.deviceinfo["FirmWare version"]) + "</td><td>Device S/N </td> <td>" + str(self.deviceinfo["Device S/N"]) + "</td></tr>\n")
         self.tStatistics.write("<tr><td>S/N </td> <td>" + str(self.deviceinfo["S/N"]) + "</td><td>Ip address </td> <td>" + str(self.deviceinfo["Ip address"]) + "</td><tr>")
@@ -218,8 +296,8 @@ class Report(object):
     def addInfo(self):
         self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
-        self.tStatistics.write("<div><br/></div><h2>Test Statistics</h2>\n")
-        self.tStatistics.write("<table class=\"general\"  cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+        self.tStatistics.write("<div><br/></div><h2>Flash Test Statistics</h2>\n")
+        self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
         self.tStatistics.write("<tr><th width=\"10%\">buildname</th><th>Begin Time</th><th>End Time</th><th>others</th><th>Link</th></tr>\n")
         if self.flashdailybuild :
             self.tStatistics.write("<tr><td>Flash Daily Build</td><td>"+self.jsoninfo_flashdailybuild["begin"]+"</td><td>" + self.jsoninfo_flashdailybuild["end"] 
@@ -235,8 +313,94 @@ class Report(object):
                  + self.jsoninfo_flashdownandupbuild["version_up_file"] + " | version down file : " 
                  + self.jsoninfo_flashdownandupbuild["version_down_file"] + " | test count :" 
                  + self.jsoninfo_flashdownandupbuild["count"]+ "</td><td><a href=\"" + self.report_dir + "Flash Down and Up.html\">"+"link"+"</a></td></tr>\n")
+        if self.flashwrongbuild :
+            self.tStatistics.write("<tr><td>Flash Wrong Build </td><td>" + self.jsoninfo_flashwrongbuild["begin"] + "</td><td>" + self.jsoninfo_flashwrongbuild["end"]
+                 + "</td><td> version before : " + self.jsoninfo_flashwrongbuild["version_before"] + " | version after : " +  self.jsoninfo_flashwrongbuild["version_after"] + " | version file : " 
+                 + self.jsoninfo_flashwrongbuild["version_file"] + "</td><td><a href=\"" + self.report_dir + "Flash Wrong Build.html\">" + "link" + "</a></td></tr>\n")
+                 
         self.tStatistics.write("</table>\n")
+    
+    def addMoveInfo(self):
+        self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
+        
+        if self.movetest:
+            self.tStatistics.write("<div><br/></div><h2>Move Test Statistics</h2>\n")
+            self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
+            self.tStatistics.write("<tr><th width=\"10%\">build-name</th><th>test date</th><th>test-times</th><th>success-times</th><th>others</th><th>Link</th></tr>\n")        
+            self.tStatistics.write("<tr><td>movetest</td><td>" + str(self.jsoninfo_movetest["time"]) + "</td><td>" + str(self.jsoninfo_movetest["all"]) + "</td><td>" + str(self.jsoninfo_movetest["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
+            self.tStatistics.write("<tr><td>gohome</td><td>" + str(self.jsoninfo_gohome["time"]) + "</td><td>" + str(self.jsoninfo_gohome["all"]) + "</td><td>" + str(self.jsoninfo_gohome["success"]) + "</td><td>nothing</td><td><a href=\"" + self.report_dir + "MoveTest.html\">link</a></td></tr>\n")
+            self.tStatistics.write("</table>\n")
+    
+    '''   
+<div><br/></div><h2>Build and Test info</h2>
+<table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+<tr bgcolor="#00FFFF"><th width="10%">Daily Build</th><th width="10%">Test-Flash DailyBuild</th><th width="10%">Name</th><th width="10%">Value</th><th width="10%">Value</th><th width="10%">Value</th><th width="10%">Value</th></tr>
+<tr height="100px" bgcolor="#E8FFF5"><td>Success </td> <td height="100px">2.3.1_rtm-zeus-20170516</td><td>Device S/N </td> <td>D39D45CDD6EEF19DD3ECF5FC30408705</td></tr>
+</table>
+    '''
+    def addBuildInfo(self):
+        allstages = ["Flash Daily Build","Flash One Build","Flash Down and Up","Flash Wrong Build","MoveTest"]
+        runstages = os.getenv("TEST_STAGES")
+        self.tStatistics.write("<div><br/></div><h2>Build and Test info</h2>\n")
+        self.tStatistics.write("<table align=center border=\"0\" cellpadding=\"5\" cellspacing=\"2\" width=\"95%\" style=\"text-align:center\">\n")
+        self.tStatistics.write("<tr bgcolor=\"#00FFFF\"><th width=\"10%\">Daily Build</th>")
+        for stage in allstages:
+            if stage in runstages:
+                self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
+            else:                
+                self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
+                
+        self.tStatistics.write("</tr>\n")
+        
+        self.tStatistics.write("<tr height=\"100px\" bgcolor=\"#E8FFF5\" ><td>success</td>")
+        for stage in allstages:
+            if stage in runstages:
+                if stage in "MoveTest":
+                    if not self.movetestresult:
+                        self.tStatistics.write("<td width=\"10%\"><font color=\"red\">" + "Failed" + "</font></th>")
+                else:
+                    self.tStatistics.write("<td width=\"10%\">" + "complete" + "</th>")
+            else:                
+                self.tStatistics.write("<td width=\"10%\">" + "norun" + "</th>")
+                
+        self.tStatistics.write("</tr>\n</table>")
+        
+        
 
+    def getchangelog(self):
+        infos=[]
+        f = open("gitchangelog.txt","r")
+        i = 0
+        for line in f.readlines():
+            if i == 0 and line.startswith("commit"):
+                i = 1
+                loginfo = {}
+                commit,loginfo["id"] = line.split(" ")
+            if i == 1 and line.startswith("Author"):
+                author,loginfo["name"],loginfo["email"] = line.split(" ")
+            if i == 1 and line.startswith("Date"):
+                print line.split(' ')
+                date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
+            if i == 1 and line.startswith(":"):
+                loginfo["infos"] = line
+                i = 0
+                infos.append(loginfo)
+            if i == 1 and line.startswith("Signed-off-by"):
+                print "do not need "
+            if i == 1 and line != "\n":
+                loginfo["message"] = line
+        f.close()
+        self.tStatistics.write("""
+            <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">
+            <tr><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
+            """)
+        for f in infos:
+            print f
+            f["email"] = f["email"].replace("<","")
+            f["email"] = f["email"].replace(">","")
+            self.tStatistics.write("<tr><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["message"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
+
+        self.tStatistics.write("</table>")
 
 
     def endReport(self):
@@ -262,15 +426,29 @@ if __name__ == "__main__":
     report = Report()
     report.createCSS()
     report.createReport(productname)
+    # add build result info here to show 
+   
+   
     
-    report.getDeviceInfo(ip)
-    report.addDeviceInfo()
     if "Flash Daily Build" in teststage:
         report.getadd_Flash_Daily_Build_Info()
     if "Flash One Build" in teststage:
         report.getadd_Flash_One_Build_Info()
     if "Flash Down and Up" in teststage:
         report.getadd_Flash_Down_and_Up_Info()
+    if "Flash Wrong Build" in teststage:
+        report.getadd_Flash_Wrong_Build_Info()
+    if "MoveTest" in teststage:
+        report.getadd_MoveTest_Info()
+
+
+
     
+    report.addBuildInfo()
+    report.getDeviceInfo(ip)
+    report.addDeviceInfo()
+    report.addMoveInfo()
     report.addInfo()
+    if os.path.exists("gitchangelog.txt"):
+        report.getchangelog()
     report.endReport()

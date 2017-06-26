@@ -2,13 +2,9 @@
 # -*- coding:utf-8 -*-
 
 '''
-   it is useful to the zeus-edison device to get into debug and simulator mode
-   if u want to use to sdp , change the Simulator's  
-            ssh.Exec("mv /etc/sdp_ref_rplidar.json /home/root/sdp_ref.json ")
-            ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref_rplidar.json ")
-    to:
-            ssh.Exec("mv /etc/sdp_ref.json /home/root/sdp_ref.json ")
-            ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref.json ")
+    it is useful to get the zeus-edison device into debug and simulator mode
+    ssh.Exec("mv /etc/sdp_ref.json /home/root/sdp_ref.json ")
+    ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref.json ")
 # author : slamtec - wei.meng
 # date : 20170301
 # modify : add info of date , change user_pass to self

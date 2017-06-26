@@ -1,9 +1,14 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+
+
 '''
-author : wei.meng @ slamtec.inc
-date : 2017.03.09
-version : 1.0
+# author : wei.meng @ slamtec.inc
+# date : 2017.03.09
+# version : 1.21
+# modify : 2017.05.24 - add 2.4 version check before update
+# modify : 2017.05.27 - double check the version : b_v == a_v and a_v != f_n
+# modify : 20170621 - replace the 'if in ' with the 'update.checkversionurl'
 '''
 
 import sys
@@ -45,7 +50,8 @@ if __name__ == "__main__":
         update = Update(ipadd,localpath+"\\"+filename)
         check = GetVersion(ipadd)
         check.save_content()
-        jsoninfo["version_before"] = str(check.getversion())
+        thisversion = str(check.getversion())
+        jsoninfo["version_before"] = thisversion
         jsoninfo["version_file"] = str(filename)
         jsoninfo["remote_path"] = str(filepath)
         print ("******************************************************************")
@@ -53,15 +59,21 @@ if __name__ == "__main__":
         beginupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
         jsoninfo["begin"] = str(beginupdate)
         time_use1 = datetime.now()
-        update.RunUpdate()
+        if update.checkversionurl(thisversion):
+            update.RunUpdate_New()
+        else:
+            update.RunUpdate()
+            
         time_use2 = datetime.now()
         jsoninfo["timeuse"] = str((time_use2-time_use1).seconds)
         endupdate = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()))
         jsoninfo["end"] = str(endupdate)
         check.save_content()
         version_after = check.getversion()
-        check.RunCheck(version_after)
+        jsoninfo["version_after"] = version_after
         output.write(json.dumps(jsoninfo))
+        check.RunCheck(thisversion)
+        check.RunCheck_1(filename)
         output.close()
         
         print ("[Flash] update end now ...")

@@ -4,7 +4,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<stdio.h>
-void strcpy_1(char a[8][6],char b[8][6]){
+void strcpy_1(char a[40][40],char b[40][40]){
     for(int i =0;i<8;i++)
             for(int j=0;j<6;j++)
                     a[i][j] = b[i][j];
@@ -168,11 +168,11 @@ void print_number(char *date){
                                printf("\033[1;34m%c",time[i][j]);
                              if(x==3)
                                printf("\033[1;35m%c",time[i][j]);
-                            if(x==4)
+                             if(x==4)
                                printf("\033[1;36m%c",time[i][j]);
-                            if(x==5)
+                             if(x==5)
                                printf("\033[1;37m%c",time[i][j]);
-                            if(x==6)
+                             if(x==6)
                                printf("\033[1;38m%c",time[i][j]);
                                
                             
@@ -198,7 +198,12 @@ int i = 0;
 tmp = strtok(buf," ");
 while(tmp!=NULL&&i<4){
     tmp = strtok(NULL," ");
-    if(i==3){
+    //at ubuntu 16.04 
+    /*
+        if(i==2)
+           i++;
+    */
+    if(i==3){ 
         i = 4;
     }
     i++;

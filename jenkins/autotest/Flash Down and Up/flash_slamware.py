@@ -1,10 +1,14 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
-author : wei.meng @ slamtec.inc
-date : 2017.03.10
-version : 1.1
-modify : 20170407 - add the up down to the summary.html
+# author : wei.meng @ slamtec.inc
+# date : 2017.03.10
+# version : 1.3
+# modify : 20170407 - add the up down to the summary.html
+# modify : 20170518 - add the judgement of Update's Function : RunUpdate and RunUpdate_new.
+# modify : 20170523 - add downgrade check , if can not falsh the down version , just according to property of the version info.
+# modify : 20170531 - add default up and down build name , if the input parameter is null, use the default version
+
 '''
 
 import sys
@@ -18,6 +22,7 @@ from Checkversion import GetVersion
 from datetime import datetime
 from createreport import Report
 from debugmode import Root
+from getversioninfo import Gvinfo
 
 
 if __name__ == "__main__":
@@ -30,7 +35,8 @@ if __name__ == "__main__":
         envproductname = "TEST_NAME"
         localupdir = "up"
         localdowndir = "down"
-        
+        fileremotepath = "\\\\10.254.0.3\\share\\temp\\mengwei\\firmware\\"
+
         localuppath = "..\\testdata\\sdprprom\\" + localupdir
         localdownpath = "..\\testdata\\sdprprom\\" + localdowndir
 
@@ -43,6 +49,20 @@ if __name__ == "__main__":
         ipadd = flash.getEnv(envipadd)
         productname = flash.getEnv(envproductname)
 
+        check = GetVersion(ipadd)
+
+        if fileuppath == None or filedownpath == None or fileuppath in "None" or filedownpath in "None" :
+            print ("[up&down] input path is None")
+            gvi = Gvinfo()            
+            check.save_content()
+            version_before = check.getversion()
+            gvi.openfile("..\\base\\tools\\config\\version.config")
+            gvi.getversion(str(version_before))
+            fileuppath = fileremotepath + gvi.getupversion() + ".bin"
+            filedownpath = fileremotepath + gvi.getdownversion() + ".bin"
+
+        
+
         fileupname = flash.getFileName(fileuppath)
         filedownname = flash.getFileName(filedownpath)
         print "[down&up] up name : " + str(fileupname )
@@ -54,7 +74,8 @@ if __name__ == "__main__":
         
         updateup = Update(ipadd,localuppath+"\\"+fileupname)
         updatedown = Update(ipadd,localdownpath+"\\"+filedownname)
-        check = GetVersion(ipadd)
+        
+
         
         jsoninfo = {}
         jsoninfo["time"] = "0"
@@ -81,7 +102,10 @@ if __name__ == "__main__":
             infos["down_begin"] = str(begindown)
             time_use1 = datetime.now()
             #-----------------------up is info ---------#
-            updatedown.RunUpdate()
+            if update.checkversionurl(str(version_before)):
+                updatedown.RunUpdate_New()
+            else:
+                updatedown.RunUpdate()
             check.RunCheck(filedownname)
             #-----------------------up is downgrade ----------#
             check.save_content()
@@ -109,7 +133,10 @@ if __name__ == "__main__":
             infos["up_begin"] = str(beginup)
             time_use1 = datetime.now()
             #-----------------------up is info ---------#
-            updateup.RunUpdate()
+            if update.checkversionurl(str(version_before)) :
+                updateup.RunUpdate_New()
+            else:
+                updateup.RunUpdate()
             check.RunCheck(fileupname)
             #-----------------------up is upgrade ----------#
             check.save_content()

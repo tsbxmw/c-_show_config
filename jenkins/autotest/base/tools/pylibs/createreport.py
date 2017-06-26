@@ -4,14 +4,15 @@
 author : mengwei @ slamtec.com inc
 date : 20170313
 version : 2.0
-create report for all stage report
+create report for all stage report - with new fuction to create stage report and statis report
+modify : 20170427 - add moveandcheck test report creator function
 '''
 import os, time, sys
 import cgi,re
 import json
 import shutil
 
-sys.path.append("pylib")
+#sys.path.append("pylib")
 from SSH import Ssh
 from debugmode import Root
 try: 
@@ -21,6 +22,7 @@ except ImportError:
 
 reload(sys)
 sys.setdefaultencoding( "utf-8")
+
 class Report(object):
 
     def __init__(self,testname):
@@ -273,6 +275,58 @@ class Report(object):
                 self.tStatistics.write("<tr><td>"+ (info["up_values"])["up_begin"] +"</td><td>" + (info["up_values"])["up_end"] + "</td><td> " + (info["up_values"])["up_timeuse"] +"</td></tr>\n")
                 self.tStatistics.write("</table>\n")
     
+    def byteify(self,input):
+        if isinstance(input, dict):
+            return {self.byteify(key): self.byteify(value) for key, value in input.iteritems()}
+        elif isinstance(input, list):
+            return [self.byteify(element) for element in input]
+        elif isinstance(input, unicode):
+            return input.encode('utf-8')
+        else:
+            return input
+            
+    def getaddStageMoveTestInfo(self):
+        output = open("json\\moveandcheck.json",'r')
+        macjsondata = json.loads(output.readline().decode('utf-8'),encoding='utf-8')
+        output.close()
+        majd = self.byteify(macjsondata)
+        print majd
+        self.tStatistics.write("<div><br/></div><h2> move and check Test Statistics</h2>\n")
+        self.tStatistics.write("<table class=\"general\" align=\"center\" cellpadding=\"5\" cellspacing=\"2\" width=\"70%\">\n")
+        self.tStatistics.write("<tr><th>num</th><th width=\"30%\">test-time</th><th>point-x</th><th>point-y</th><th>a2 num</th><th>result</th></tr>\n")
+        i = 1
+        for jd in majd :
+            print jd
+            if jd["result"] :
+                self.tStatistics.write("<tr><td>"+ str(i) + "</td><td>" + str(jd["timenow"]) +"</td><td>"+ str(jd["pointx"]) +"</td><td>" + str(jd["pointy"]) + "</td><td>" + str(jd["a2num"]) + "</td><td bgcolor=\"#00EC00\">" + str(jd["result"]) + "</td></tr>\n")
+            else:
+                self.tStatistics.write("<tr><td>"+ str(i) + "</td><td>" + str(jd["timenow"]) +"</td><td>"+ str(jd["pointx"]) +"</td><td>" + str(jd["pointy"]) + "</td><td>" + str(jd["a2num"]) + "</td><td bgcolor=\"#EA0000\">" + str(jd["result"]) + "</td></tr>\n")
+                
+            i = i + 1
+        self.tStatistics.write("</table>\n")
+        
+        output = open("json\\gohome.json",'r')
+        ghjsondata = json.load(output)
+        output.close()
+        ghjd = self.byteify(ghjsondata)
+        print majd
+        
+        self.tStatistics.write("<div><br/></div><h2> Go Home Test Statistics</h2>\n")
+        self.tStatistics.write("<table class=\"general\" align=\"center\" cellpadding=\"5\" cellspacing=\"2\" width=\"70%\">\n")
+        self.tStatistics.write("<tr><th>num</th><th width=\"30%\">test-time</th><th>point-x</th><th>point-y</th><th>testnum</th><th>result</th></tr>\n")
+            
+        i = 1
+        for jd in ghjd :
+            if "success" in jd["result"] :
+                self.tStatistics.write("<tr><td>"+ str(i) + "</td><td>" + str(jd["timenow"]) +"</td><td>"+ str(jd["pointx"]) +"</td><td>" + str(jd["pointy"]) + "</td><td>" + str(jd["testnum"]) + "</td><td bgcolor=\"green\">" + str(jd["result"]) + "</td></tr>\n")
+            else:
+                self.tStatistics.write("<tr><td>"+ str(i) + "</td><td>" + str(jd["timenow"]) +"</td><td>"+ str(jd["pointx"]) +"</td><td>" + str(jd["pointy"]) + "</td><td>" + str(jd["testnum"]) + "</td><td bgcolor=\"red\">" + str(jd["result"]) + "</td></tr>\n")
+            i = i + 1
+        self.tStatistics.write("</table>\n")
+        
+        
+        
+    
     def addStageInfo(self):
         self.tStatistics.write("<div><br/></div><h2> " + self.testname + " Test Statistics</h2>\n")
         self.tStatistics.write("<table class=\"general\" align=\"center\" cellpadding=\"5\" cellspacing=\"2\" width=\"70%\">\n")
@@ -327,6 +381,17 @@ class Report(object):
         #report.addInfo()
         self.getaddStageDownUpBuildInfo()
         self.endReport()    
+    
+    def runCreateMoveTestReport(self,ip,productname):
+        self.createCSS()
+        self.createReport(productname)
+        self.getDeviceInfo(ip)
+        self.addDeviceInfo()
+        #report.addInfo()
+        self.getaddStageMoveTestInfo()
+        self.endReport()   
+    
+   
         
 if __name__ == "__main__":
     #deviceinfo = {"FirmWare version":"zeus_edison.2.2.1_rtm.20170308.bin","Device S/N":"D58F4024E0EDF790D4E9F2F9075483E4","Ip address":"192.168.11.1","S/N":" C47ADDC6F19575BD90A14AC5"}

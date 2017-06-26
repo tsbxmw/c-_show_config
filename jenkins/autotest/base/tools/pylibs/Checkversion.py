@@ -1,12 +1,13 @@
 '''
 # use urllib2 to get the content of web ; 
 # get the version from json data ;
-# version : 1.2
+# version : 1.5
 # author : mengwei 
 # modify : 2017.3.1 - add new function
 # modify : 2017.3.2 - add output to file (succesful and fail)
 # modify : 2017.3.6 - maybe change the names to one name
 # modify : 2017.3.27 - add check the flash wrong build 
+# modify : 2017.5.23 - add new check function : when this version can not be downgrade , use this check .
 '''
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
@@ -81,7 +82,24 @@ class GetVersion(object):
             os.system("echo fail > compare")
             sys.exit(1)
             
-    
+        
+    def compare_cannotdown(self,version_name):
+        print "[getupdateversion-1] not-downgrade version check running"
+        print "[getupdateversion-1] before   version is : " + version_name
+        print "[getupdateversion-1] current  version is : " + self.version_num + " " + self.version_date
+        if self.version_date in version_name :
+            if self.version_num in version_name:
+                print "[getupdateversion-1][--- update failed (version name and num is right , should not be downgrade !)  ---] "
+                os.system("echo fail > compare ")
+                sys.exit(1)
+            else:
+                print "[getupdateversion-1]< successful > version check OK"
+                os.system("echo successful > compare")
+                
+        else :
+            print "[getupdateversion-1]< successful > version check OK"
+            os.system("echo successful > compare")
+            
 
     def  RunCheck(self,version_name):
         try:
@@ -92,6 +110,15 @@ class GetVersion(object):
         except Exception,e:
             print "[getupdateversion]< error > wrong with error : " + str(e)
             sys.exit(1)
-
+    
+    def RunCheck_1(self,version_name):
+        try :
+            self.save_content()
+            self.getversion()
+            self.splitversion()
+            self.compare_cannotdown(version_name)
+        except Exception,e:
+            print "[getupdateversion-1]< error > wrong with error : " + str(e)
+            sys.exit(1)
 # sdp_edison.2.2.1_rtm.20170301.bin
 # 2.2.1_rtm-sdp-20170301

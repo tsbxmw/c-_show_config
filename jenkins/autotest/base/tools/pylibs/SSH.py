@@ -2,7 +2,7 @@
 #!/usr/bin/python 
 
 '''
-# version : 1.3
+# version : 1.4
 # attention ：using paramiko module --- using 'pip install paramiko' to install the module
 # functon : ssh and sftp function
 # author : mengwei
@@ -11,6 +11,7 @@
 # modify : 2017.03.02 - change the Ssh() to Ssh(ip,user,pass)
 # modify : 2017.03.09 - change to the module
 # modify : 2017.03.17 - add new function getfile
+# modify : 2017.05.25 - add new function Exec_noreturn , try to run the 'reboo' command, but not work fine
 '''
 
 import paramiko
@@ -39,7 +40,13 @@ class Ssh(object):
             return out
         except Exception,e:
             print "[SSH Exec] : wrong with it -- " + str(e)   
-
+    def Exec_noreturn(self,cmd):
+        try:
+            print "[exec-noreturn] " + str(cmd)
+            stdin, stdout, stderr = self.connect.exec_command(cmd)
+        except Exception,e:
+            print "[SSH Exec-noreturn] : wrong with it -- " + str(e)
+    
     def Close(self):
         try:
             self.connect.close()

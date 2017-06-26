@@ -4,18 +4,19 @@
 '''
 # before : pip install requests 
    it is useful to the zeus-edison device to get into debug and simulator mode
-   if u want to use to sdp , change the Simulator's  
-            ssh.Exec("mv /etc/sdp_ref_rplidar.json /home/root/sdp_ref.json ")
-            ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref_rplidar.json ")
-    to:
+   the default config file is /etc/sdp_ref.json
             ssh.Exec("mv /etc/sdp_ref.json /home/root/sdp_ref.json ")
             ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref.json ")
 # author : slamtec.inc - wei.meng
 # date   : 20170301
+# ver    : 1.42
 # modify : 2017.03.02 - add info of data , change user_pass to self.unlock_info
 # modify : 2017.03.03 - change to root mode , delete the simulator mode
 # modify : 2017.03.09 - add new flag root 
 # modify : 2017.03.17 - add new flag unroot , log , unsimulator -- add new function getlog
+# modify : 2017.04.20 - add new function : test the depthcam
+# modify : 2017.05.23 - replace 'unroot' by 'unrt' and replace 'unsimulator' by 'unsm' 
+# modify : 2017.05.27 - modify the  log get function , to get the logs after rebooting
 '''
 
 import requests
@@ -93,15 +94,18 @@ class Root(object):
             ssh.Close()
             print "[sn-unlock-num] " + self.snunlock
             self.data_debug = {'cha-token':self.snunlock}
-        except:
+        except Exception,e:
             print ('[sn-unlock] wrong with get sn unlock')
+            raise e
 
     def Root(self):
         try:
             self.session.post(url=self.url_debug,data=self.data_debug)
             print "[root] successful"
+            return True
         except:
             print ('[root] wrong with root')
+            return False
             
     def UnRoot(self):
         try:
@@ -133,6 +137,24 @@ class Root(object):
         except:
             print ('[Simulator Mode]Simulator Mode wrong ')
 
+            
+    def TestRealSense(self):
+        try:
+            ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
+            ssh.Connect()
+            ssh.Exec("chmod a+x open.sh")
+            ssh.Exec("./open.sh | grep Successfully > realsense.log")
+            ssh.Close()
+            
+            sf = Sftp(self.ip)
+            sf.Connect()
+            sf.GetFile("/home/root/realsense.log",".\\realsense.log")
+            sf.Close()
+            print "[Test Realsense] - successful "
+        except:
+            print "[Test Realsense] - fail to "
+            
+            
     def UnSimulator(self):
         try:
             ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
@@ -148,6 +170,30 @@ class Root(object):
     def GetLog(self,logname):
         try:
             ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
+            '''
+            while True:
+                try:
+                    ssh.Connect()
+                    ssh.Exec_noretrun("reboot")
+                    print "[getlog] waitting for rebooting to get the log file"
+
+                    break
+                except:
+                    print "[getlog] wrong with reboot"
+                    time.sleep(3)
+                    continue
+            while True:
+                try:
+                    ssh.Connect()
+                    ssh.Close()
+                    print "[getlog] waitting for rebooting to get the log file"
+                    break
+                except:
+                    print "[getlog] waitting for rebooting to get the log file"
+                    time.sleep(3)
+                    continue
+            '''
+
             ssh.Connect()
             ssh.Exec("journalctl > /home/root/system.log")          
             ssh.Close()
@@ -189,8 +235,13 @@ class Root(object):
                         i = i + 1
                         continue
                     try:
-                        self.Root()
-                        print "root ok"
+                        if self.Root():
+                            print "root ok"
+                        else:
+                            print "[Root] Root wrong"
+                            time.sleep(10)
+                            i = i + 1
+                            continue
                     except:
                         print "[Root] Root wrong"
                         time.sleep(10)
@@ -229,7 +280,7 @@ class Root(object):
                         continue
                    
                     break
-            if "unroot" in flag:
+            if "unrt" in flag:
                 while True: 
                     print ("try " + "times " + str(i))
                     try:
@@ -253,7 +304,7 @@ class Root(object):
                         i = i + 1
                         continue
                     break
-            if "unsimulator" in flag :
+            if "unsm" in flag :
                 while True: 
                     print ("try " + "times " + str(i))
                     try:
