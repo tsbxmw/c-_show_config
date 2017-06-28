@@ -47,6 +47,7 @@ node("${PRODUCT_NAME}") {
     //copy the pylibs and tools to the local dir
     bat "xcopy /yse .\\checkout\\base\\* .\\base\\"
     bat "xcopy /yse .\\checkout\\testdata\\* .\\testdata\\"
+    bat "xcopy /yse " + "${PATH_OF_CHANGELOG}" + " .\\"
     
     //delete the reports and jsons file and logs
     deletedir(".\\testdata\\report")
