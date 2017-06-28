@@ -3,7 +3,7 @@
 '''
 # author : wei.meng @ slamtec.inc
 # date : 20170307
-# version : 1.8
+# version : 1.81
 # modify : 20170311 - add css to html 
 # modify : 20170313 - add create Flash One Build 
 # modify : 20170323 - add create Daily Build
@@ -12,6 +12,7 @@
 # modify : 20170517 - add new stage report to summary - the daily build stage report
 # modify : 20170524 - add new stage info : Flash Wrong Build to the []
 # modify : 20170620 - add new func : the change log information 
+# modify : 20170628 - bugfix - to suit the commit info
 '''
 import os, time, sys
 import cgi,re
@@ -369,36 +370,52 @@ class Report(object):
 
     def getchangelog(self):
         infos=[]
-        f = open("gitchangelog.txt","r")
+        f = open("..\\gitchangelog.txt","r")
         i = 0
         for line in f.readlines():
+            if i == 1:
+                if line.startswith("    ") :
+                    loginfo["info"] = loginfo["info"] + line
+                if line.startswith("commit"):
+                    infos.append(loginfo)
+                    i = 0
+            if i == 1 and line.startswith("Date"):
+                print line.split(' ')
+                date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
+            if i == 1 and line.startswith("Author"):
+                author = []
+                author = line.split(" ")
+                loginfo["name"] = " "
+                for a in author:
+                    if a.startswith("<"):
+                        loginfo["email"] = a
+                    if a == "Author:":
+                        print "no need"
+                    else:
+                        loginfo["name"] = loginfo["name"] + a
+
             if i == 0 and line.startswith("commit"):
                 i = 1
                 loginfo = {}
                 commit,loginfo["id"] = line.split(" ")
-            if i == 1 and line.startswith("Author"):
-                author,loginfo["name"],loginfo["email"] = line.split(" ")
-            if i == 1 and line.startswith("Date"):
-                print line.split(' ')
-                date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
-            if i == 1 and line.startswith(":"):
-                loginfo["infos"] = line
-                i = 0
-                infos.append(loginfo)
-            if i == 1 and line.startswith("Signed-off-by"):
-                print "do not need "
-            if i == 1 and line != "\n":
-                loginfo["message"] = line
+                loginfo["info"] = ""
+
         f.close()
+
         self.tStatistics.write("""
+            <br></br>
+            <br></br>
             <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">
-            <tr><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
+            <tr><th>i</th><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
             """)
+        i = 1
         for f in infos:
             print f
             f["email"] = f["email"].replace("<","")
             f["email"] = f["email"].replace(">","")
-            self.tStatistics.write("<tr><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["message"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
+            self.tStatistics.write("<tr><td>" +  str(i) + "</td><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["info"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
+            
+            i = i + 1
 
         self.tStatistics.write("</table>")
 
@@ -428,7 +445,6 @@ if __name__ == "__main__":
     report.createReport(productname)
     # add build result info here to show 
    
-   
     
     if "Flash Daily Build" in teststage:
         report.getadd_Flash_Daily_Build_Info()
@@ -449,6 +465,9 @@ if __name__ == "__main__":
     report.addDeviceInfo()
     report.addMoveInfo()
     report.addInfo()
-    if os.path.exists("gitchangelog.txt"):
+    if os.path.exists("..\\gitchangelog.txt"):
+        print "[createReport] find the gitchangelog.txt "
         report.getchangelog()
+    else:
+        print "[createReport] do not find the gitchangelog"
     report.endReport()
