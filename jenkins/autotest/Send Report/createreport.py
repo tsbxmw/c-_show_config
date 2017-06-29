@@ -349,21 +349,23 @@ class Report(object):
             if stage in runstages:
                 self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
             else:                
-                self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
+                #self.tStatistics.write("<th width=\"10%\">" + stage + "</th>")
+                print "no need add"
                 
         self.tStatistics.write("</tr>\n")
-        
-        self.tStatistics.write("<tr height=\"100px\" bgcolor=\"#E8FFF5\" ><td>success</td>")
+
+        self.tStatistics.write("<tr height=\"50px\" bgcolor=\"#E8FFF5\" ><td>Success</td>")
         for stage in allstages:
             if stage in runstages:
                 if stage in "MoveTest":
                     if not self.movetestresult:
                         self.tStatistics.write("<td width=\"10%\"><font color=\"red\">" + "Failed" + "</font></th>")
+
                 else:
-                    self.tStatistics.write("<td width=\"10%\">" + "complete" + "</th>")
+                    self.tStatistics.write("<td width=\"10%\">" + "Success" + "</th>")
             else:                
-                self.tStatistics.write("<td width=\"10%\">" + "norun" + "</th>")
-                
+                #self.tStatistics.write("<td width=\"10%\">" + "norun" + "</th>")
+                print "no need add -_-"            
         self.tStatistics.write("</tr>\n</table>")
         
         
@@ -371,16 +373,22 @@ class Report(object):
     def getchangelog(self):
         infos=[]
         f = open("..\\gitchangelog.txt","r")
+        loginfo = {}
         i = 0
         for line in f.readlines():
             if i == 1:
-                if line.startswith("    ") :
+
+                if (not line.startswith("commit")) and (not line.startswith("Author")) and (not line.startswith("Date")) and (not line.startswith(":"))  :
                     loginfo["info"] = loginfo["info"] + line
-                if line.startswith("commit"):
-                    infos.append(loginfo)
-                    i = 0
+                else :
+                    if ( line.startswith(":") or line.startswith("commit") ):
+                        infos.append(loginfo)
+                        i = 0
+                    else :                        
+                        if (not line.startswith("Date") ) and (not line.startswith("Author")) :
+                            infos.append(loginfo)
+                            i = 0
             if i == 1 and line.startswith("Date"):
-                print line.split(' ')
                 date,space,space,loginfo["week"],loginfo["month"],loginfo["day"],loginfo["time"],loginfo["year"],nouse = line.split(" ")
             if i == 1 and line.startswith("Author"):
                 author = []
@@ -390,16 +398,19 @@ class Report(object):
                     if a.startswith("<"):
                         loginfo["email"] = a
                     if a == "Author:":
-                        print "no need"
+                        print " "
                     else:
                         loginfo["name"] = loginfo["name"] + a
+
 
             if i == 0 and line.startswith("commit"):
                 i = 1
                 loginfo = {}
                 commit,loginfo["id"] = line.split(" ")
                 loginfo["info"] = ""
-
+        
+        if i == 1 :
+            infos.append(loginfo)
         f.close()
 
         self.tStatistics.write("""

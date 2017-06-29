@@ -1,3 +1,5 @@
+// m : change to 10.254.0.3 
+
 import hudson.model.*
 import jenkins.model.Jenkins
 import hudson.AbortException
@@ -233,6 +235,9 @@ def publishFailed(stage_name,errorinfo) {
     htmlxxx = htmlxxx + """</tr>"""
     htmlyyy = htmlyyy + """</tr>"""
 
+    
+    changelog = readFile '.\\gitchangelog.txt'
+
     body = """
     <html>
         <head>
@@ -257,7 +262,12 @@ def publishFailed(stage_name,errorinfo) {
                 <tr align="center" bgcolor="#F0F80F" height="10px" style="color:blue"><th width="15%">build name</th><th width="15%">build number</th><th width="15%">fail stage</th><th width="55%">build url</th></tr>
                 <tr align="center" bgcolor="#F0F8FF" height="40px" style="color:black"><td width="15%">"""+  env.JOB_NAME  +"""</td><td width="15%">"""+ env.BUILD_NUMBER +"""</td><td width="15%">""" + stage_name + """</td><td width="55%">""" + env.BUILD_URL + """ </td></tr>
                 </table>
-                
+                <br></br>
+                 </table>
+                <table border="0" cellpadding="5"  align=center  cellspacing="2" width="95%"  >
+                <tr align="center" bgcolor="#000800" height="10px" style="color:white"><th> commit </th></tr>
+                <tr align="center" bgcolor="#FFFFFF" height="10px" style="color:black"><th>""" + changelog +""" </th></tr>
+                </table>
             </div>
         </body>
     </html>
@@ -322,8 +332,9 @@ def publishTestReport(testTypes, noNeedReportStage, sendReport) {
     
     //push the report to the share dir not complete
     //push the log file to the share dir
-    bat "mkdir \\\\10.254.1.27\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%"
-    bat "xcopy /yse .\\testdata\\report\\* \\\\10.254.1.27\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%\\"
+    //change the log dir to 10.254.0.3
+    bat "mkdir \\\\10.254.0.3\\Share\\test_release\\daily\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%"
+    bat "xcopy /yse .\\testdata\\report\\* \\\\10.254.0.3\\Share\\test_release\\daily\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%\\"
     
 }
 
