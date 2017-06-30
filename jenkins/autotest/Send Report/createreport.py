@@ -3,7 +3,7 @@
 '''
 # author : wei.meng @ slamtec.inc
 # date : 20170307
-# version : 1.81
+# version : 1.8.2
 # modify : 20170311 - add css to html 
 # modify : 20170313 - add create Flash One Build 
 # modify : 20170323 - add create Daily Build
@@ -13,6 +13,7 @@
 # modify : 20170524 - add new stage info : Flash Wrong Build to the []
 # modify : 20170620 - add new func : the change log information 
 # modify : 20170628 - bugfix - to suit the commit info
+# modify : 20170630 - add module name to the changelog show 
 '''
 import os, time, sys
 import cgi,re
@@ -295,7 +296,7 @@ class Report(object):
         self.tStatistics.write("</table>")
 
     def addInfo(self):
-        self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
+        self.report_dir="\\\\10.254.0.3\\Share\\test_release\\daily\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
         self.tStatistics.write("<div><br/></div><h2>Flash Test Statistics</h2>\n")
         self.tStatistics.write("<table class=\"general\" align=center cellpadding=\"5\" cellspacing=\"2\" width=\"95%\">\n")
@@ -322,7 +323,7 @@ class Report(object):
         self.tStatistics.write("</table>\n")
     
     def addMoveInfo(self):
-        self.report_dir="\\\\10.254.1.27\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
+        self.report_dir="\\\\10.254.0.3\\Share\\test_release\\daily\\TestReport\\" + os.getenv("JOB_NAME") + "\\" + os.getenv("BUILD_NUMBER") + "\\"
         
         if self.movetest:
             self.tStatistics.write("<div><br/></div><h2>Move Test Statistics</h2>\n")
@@ -373,15 +374,21 @@ class Report(object):
     def getchangelog(self):
         infos=[]
         f = open("..\\gitchangelog.txt","r")
+        modules = ["agent","sdp","sdk","firmwares/base","firmwares/cp0","firmwares/ui","firmwares/zeus","platforms/edison","platforms/phoenix"]
         loginfo = {}
         i = 0
         for line in f.readlines():
+            if line.replace("\n","") in modules:
+                print line
+                project = line
+                continue
             if i == 1:
 
                 if (not line.startswith("commit")) and (not line.startswith("Author")) and (not line.startswith("Date")) and (not line.startswith(":"))  :
                     loginfo["info"] = loginfo["info"] + line
                 else :
                     if ( line.startswith(":") or line.startswith("commit") ):
+                        print loginfo["project"]
                         infos.append(loginfo)
                         i = 0
                     else :                        
@@ -408,6 +415,7 @@ class Report(object):
                 loginfo = {}
                 commit,loginfo["id"] = line.split(" ")
                 loginfo["info"] = ""
+                loginfo["project"] = project
         
         if i == 1 :
             infos.append(loginfo)
@@ -416,15 +424,18 @@ class Report(object):
         self.tStatistics.write("""
             <br></br>
             <br></br>
-            <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">
-            <tr><th>i</th><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
+            <table border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">            
+            <tr align="center" bgcolor="#000800" height="10px" style="color:white"><th> commit </th></tr>
+            </table>
+            <table  border="0" cellpadding="5"  align=center  cellspacing="2" width="95%">            
+            <tr><th>i</th><th>module</th><th>id</th><th>time</th><th>message</th><th>name</th><th>email</th></tr>
             """)
         i = 1
         for f in infos:
             print f
             f["email"] = f["email"].replace("<","")
             f["email"] = f["email"].replace(">","")
-            self.tStatistics.write("<tr><td>" +  str(i) + "</td><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["info"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
+            self.tStatistics.write("<tr><td>" +  str(i) + "</td><td>" + f["project"] + "</td><td>"+f["id"] + "</td><td>" + f["year"] + "-" + f["month"] + "-"+ f["day"] + "-"+ f["time"] + "</td><td>" + f["info"] + "</td><td>" + f["name"] + "</td><td>" + f["email"] + "</td></tr>")
             
             i = i + 1
 

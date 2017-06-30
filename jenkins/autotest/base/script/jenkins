@@ -205,8 +205,8 @@ def publishFailed(stage_name,errorinfo) {
         }
         
     }
-    bat "mkdir \\\\10.254.1.27\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%"
-    bat "xcopy /yse .\\testdata\\report\\* \\\\10.254.1.27\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%\\"
+    bat "mkdir \\\\10.254.0.3\\Share\\test_release\\daily\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%"
+    bat "xcopy /yse .\\testdata\\report\\* \\\\10.254.0.3\\Share\\test_release\\daily\\TestReport\\%JOB_NAME%\\%BUILD_NUMBER%\\"
 
     def htmlxxx = ' ' 
     def htmlyyy = ' '
@@ -275,7 +275,7 @@ def publishFailed(stage_name,errorinfo) {
     mail body: body, cc: "${FAIL_MAIL_TO}", charset: 'UTF-8', mimeType: 'text/html',subject:subjects , to: "${FAIL_MAIL_TO}"
     
 }
-
+// publish the successful report
 def publishTestReport(testTypes, noNeedReportStage, sendReport) {
     
     reportDir = "testdata/report"
@@ -353,7 +353,7 @@ def checkout(remote,local)
     //bat "git clone " + remote + " " + local + "\\"
     echo "-----------------------------------------------------"
 }
-
+// execut the command
 def execCommand(cmd) {
     if(isUnix()) 
     {
