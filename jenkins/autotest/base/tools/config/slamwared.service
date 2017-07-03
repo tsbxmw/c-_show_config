@@ -1,0 +1,19 @@
+[Unit]
+Description=Slamware daemon
+Requires=network.target sys-subsystem-net-devices-wlan0.device
+Wants=update_server.service selftest.service
+After=network.target sys-subsystem-net-devices-wlan0.device update_server.service selftest.service
+
+[Service]
+LimitCORE=infinity
+ExecStartPre=-/usr/bin/init_slamware.sh
+ExecStartPre=-/usr/bin/check_cp0.sh reboot
+ExecStart=/usr/bin/slamwared -r /home/root/slamware.stms -t /etc/sdp_ref.json
+ExecStopPost=-/usr/bin/backup_slamware.sh
+Restart=always
+StartLimitInterval=1min
+StartLimitBurst=10
+StartLimitAction=none
+
+[Install]
+WantedBy=multi-user.target
