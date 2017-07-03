@@ -9,6 +9,8 @@ modify : 20170606 - add function define "Getftpfile"
 import sys
 import os
 import time
+from SSH import Ssh
+from SSH import Sftp
 
 class Getfiles(object):
     def __init__(self):
@@ -28,3 +30,15 @@ class Getfiles(object):
     def Getftpfile(self,remote,local):
         print ("[getftpfile] remote : " + str(remote))
         print ("[getftpfile] local  : " + str(local))
+
+    def GetSCPfile(self,remote,local,ip):
+        print ("[getscpfile] remote : " + str(remote))
+        print ("[getscpfile] local  : " + str(local))
+        sftp = Sftp(ip)
+        sftp.Connect()
+        sftp.GetFile(reomte,local)
+
+    
+
+
+
