@@ -12,6 +12,7 @@ import os,sys,time,json
 from ConfigRead import ConfigRead
 from subprocess import Popen,PIPE
 from createreport import Report
+from ConfigWrite import ConfigWrite
 
 class MoveAndCheck(object):
 
@@ -135,6 +136,10 @@ class MoveAndCheck(object):
         os.system("..\\base\\tools\\win32tools\\zeustool.exe 24 " + ip +" map\\map.stcm")
         print "[MoveTest] set map over ."
         time.sleep(30)
+        cr = ConfigWrite()
+        cr.WriteSlamwaredService(ip,"root","slamware123")
+
+
         
 if __name__ == "__main__":
     if len(sys.argv) > 1:
