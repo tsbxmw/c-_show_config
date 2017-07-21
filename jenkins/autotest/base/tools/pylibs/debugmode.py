@@ -9,7 +9,7 @@
             ssh.Exec("mv /home/root/sdp_ref_simulator.json /etc/sdp_ref.json ")
 # author : slamtec.inc - wei.meng
 # date   : 20170301
-# ver    : 1.42
+# ver    : 1.43
 # modify : 2017.03.02 - add info of data , change user_pass to self.unlock_info
 # modify : 2017.03.03 - change to root mode , delete the simulator mode
 # modify : 2017.03.09 - add new flag root 
@@ -17,6 +17,7 @@
 # modify : 2017.04.20 - add new function : test the depthcam
 # modify : 2017.05.23 - replace 'unroot' by 'unrt' and replace 'unsimulator' by 'unsm' 
 # modify : 2017.05.27 - modify the  log get function , to get the logs after rebooting
+# modify : 2017.07.21 - modify the test realsense : add put file to remote
 '''
 
 import requests
@@ -140,10 +141,15 @@ class Root(object):
             
     def TestRealSense(self):
         try:
+            sf = Sftp(self.ip)
+            sf.Connect()
+            sf.PutFile(".\\testrealsense.sh","/home/root/testrealsense.sh")
+            sf.Close()
+            
             ssh = Ssh(self.ip,self.ssh_user,self.ssh_pass)
             ssh.Connect()
-            ssh.Exec("chmod a+x open.sh")
-            ssh.Exec("./open.sh | grep Successfully > realsense.log")
+            ssh.Exec("chmod a+x testrealsense.sh")
+            ssh.Exec("./testrealsense.sh | grep Successfully > realsense.log")
             ssh.Close()
             
             sf = Sftp(self.ip)
