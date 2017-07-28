@@ -207,6 +207,7 @@ class Root(object):
             sf = Sftp(self.ip)
             sf.Connect()
             sf.GetFile("/home/root/system.log","log\\"+logname)            
+            # sf.GetFile("/home/root/slamware.stms","log\\slamawre.stms")
             sf.Close()
             print "[getlog] switch successful"
         except:

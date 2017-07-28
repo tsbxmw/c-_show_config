@@ -8,7 +8,9 @@
 # description -  using to read the version-limit file and return the limit version-limit
 #
 '''
-
+# version 1.0
+# author wei.meng@slamtec.com
+# 
 '''
 {
 "current":"2.4.0_dev",

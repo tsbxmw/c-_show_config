@@ -1,4 +1,5 @@
 // m : change to 10.254.0.3 
+// m : add changelog function
 
 import hudson.model.*
 import jenkins.model.Jenkins
