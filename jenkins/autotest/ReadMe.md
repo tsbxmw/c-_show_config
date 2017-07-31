@@ -1,5 +1,5 @@
 *************************************
-* version : 1.4
+* version : 1.5
 * date    : 20170310
 * author  : wei.meng
 * copyright : slamtec.inc
@@ -8,6 +8,7 @@
 * modify : 20170426 - add move and check test
 * modify : 20170525 - add downgrade version test
 * modify : 20170607 - delete the report log dir in the stages
+* modify : 20170731 - add some thing new 
 *************************************
 
 # ReadMe.md
@@ -125,7 +126,54 @@
           |- down : the down build
           |- today : today build
 
+### 10, MapTest
 
+>    using to test the map upload and down load
+
+    MapTest
+    | - maps : the maps of upload
+    | - mapdownload : the maps of download
+    | - map.exe : using to upload and download map
+    | - maptest.py : the python script
+    | - cirun.cmd : the bat script
+
+### 11, RealsenseTest
+
+>    using to test the realsense is up or down
+
+    RealsenseTest
+    | - cirun.cmd : bat script
+    | - realsensetest.py : the python test script
+    | - testrealsense.sh : the sh running at 192.168.11.3
+
+### 12, RunAutoTest
+
+>    using to test the device running for hours
+
+    RunAutoTest
+    | - autorun.conf : the config file
+    | - AutoRun.oy : the python script 
+    | - cirun.cmd : the bat script
+    | - RunAuto.exe : the exec file
+
+### 13, SonarTest
+
+>    using to test the sonar device
+
+    SonarTest
+    | - cirun.cmd : the bat script
+    | - sonartest.py : the sonart test python script
+    | - TestCase_sonartest.exe : exec file 
+
+### 14, ToPointTest
+
+>    using to test the point to point dvi
+
+    ToPointTest
+    | - cirun.cmd : the bat script
+    | - topoint.conf : the config file for the TP
+    | - ToPoint.py : the python script
+    | - ToPointxy.exe : exec file
 --------
 
 ## How to use it ?
