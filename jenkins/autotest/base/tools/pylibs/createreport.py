@@ -324,9 +324,7 @@ class Report(object):
             i = i + 1
         self.tStatistics.write("</table>\n")
         
-        
-        
-    
+
     def addStageInfo(self):
         self.tStatistics.write("<div><br/></div><h2> " + self.testname + " Test Statistics</h2>\n")
         self.tStatistics.write("<table class=\"general\" align=\"center\" cellpadding=\"5\" cellspacing=\"2\" width=\"70%\">\n")
@@ -334,6 +332,23 @@ class Report(object):
         self.tStatistics.write("<tr><td>"+ self.jsoninfo["version_before"] +"</td><td>"+ self.version_after +"</td><td>" + self.jsoninfo["version_file"] + "</td></tr>\n")
         self.tStatistics.write("<tr><th width=\"30%\">Begin Time</th><th>End Time</th><th>Time Use (s)</th></tr>\n")
         self.tStatistics.write("<tr><td>"+ self.jsoninfo["begin"] +"</td><td>" + self.jsoninfo["end"] + "</td><td> " + self.jsoninfo["timeuse"] +"</td></tr>\n")
+        self.tStatistics.write("</table>\n")
+
+    def addToPointInfo(self):
+        output = open("testinfo.json",'r')
+        tpjsondata = json.load(output)
+        output.close()
+        tpjd = self.byteify(tpjsondata)
+        print tpjd
+        self.tStatistics.write("<div><br/></div><h2> To Point Test Statistics</h2>\n")
+        self.tStatistics.write("<table class=\"general\" align=\"center\" cellpadding=\"5\" cellspacing=\"2\" width=\"70%\">\n")
+        self.tStatistics.write("<tr><th>num</th>><th>point-x</th><th>point-y</th><th>real-x</th><th>real-y</th><th>result</th></tr>\n")
+        i = 1
+        for jd in tpjd :
+            print jd
+            print type(jd) == type({})
+            self.tStatistics.write("<tr><td>"+ str(i) + "</td><td>"+ jd["x"] +"</td><td>" + jd["y"] + "</td><td>"+ jd["x1"] +"</td><td>" + jd["y1"] + "</td><td>" + jd["divresult"] + "</td></tr>\n")
+            i = i + 1
         self.tStatistics.write("</table>\n")
 
     def endReport(self):
@@ -344,7 +359,15 @@ class Report(object):
         self.tCss = open(".\\report\\wcss.css" , 'wb')
         self.tCss.write(self.css)
         self.tCss.close()
-        
+
+    def runCreateTPReport(self,ip,productname):
+        self.createCSS()
+        self.createReport(productname)
+        self.getDeviceInfo(ip)
+        self.addDeviceInfo()
+        self.addToPointInfo()
+        self.endReport()
+
     def runCreateReport(self,ip,productname):
         self.createCSS()
         self.createReport(productname)

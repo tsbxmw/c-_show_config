@@ -1,13 +1,14 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 '''
-# version : v1.22
+# version : v1.23
 # authore : wei.meng @ slamtec.com
 # date    : 20170304
 # modify  : 20170503 - add update_new and runupdate_new function at the new slamware version 2.4.0_dev
 # modify  : 20170518 - /service/system/system_upgrade is the new action url.
 # modify  : 20170605 - bug fix , but not work.
 # modify  : 20170621 - add new version check , if version >= 2.4 , using the url _ new
+# bugfix  : 20170731 | the Update_New is wrong , fix it to the Update_New 
 
 ####
 #   ip - slamware ip
@@ -113,7 +114,7 @@ class Update(object):
                 print "[update] <error> " + str(e)
                 time.sleep(10)
                 print "[update] try again ..."
-                self.Update()
+                self.Update_New()
 
     # try to fix some bad line issue , but not work fine ,would fix it on new deal.
     def Update_New_1(self):
