@@ -1,7 +1,12 @@
-#encoding=utf-8
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 
+'''
+# version 0.0.1
+# date 20170728
+# author wei.meng @ slamtec
+'''
 import os,sys,json,time
-
 
 class AutoRun(object):
 
@@ -21,7 +26,7 @@ class AutoRun(object):
         
     def runAuto(self):
         for point in self.points:
-            os.system("moveto.exe " + ip + " " + point["x"] + " " + point["y"])
+            os.system("moveto.exe " + self.ip + " " + str(point["x"]) + " " + str(point["y"]))
         
 
 if __name__ == "__main__":
@@ -29,4 +34,5 @@ if __name__ == "__main__":
     ar.getJsonData()
     ar.getPointNum()
     ar.getAllPoints()
+    ar.runAuto()
     
