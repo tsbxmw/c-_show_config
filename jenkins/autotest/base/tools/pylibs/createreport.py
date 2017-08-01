@@ -3,9 +3,10 @@
 '''
 author : mengwei @ slamtec.com inc
 date : 20170313
-version : 2.0
+version : 2.10
 create report for all stage report - with new fuction to create stage report and statis report
 modify : 20170427 - add moveandcheck test report creator function
+modify : 20170801 - add TP report , add MapTest report
 '''
 import os, time, sys
 import cgi,re
@@ -351,6 +352,20 @@ class Report(object):
             i = i + 1
         self.tStatistics.write("</table>\n")
 
+    def addMapTestInfo(self):
+        output = open("testinfo.json",'r')
+        mtjsondata = json.load(output)
+        output.close()
+        mtjd = self.byteify(mtjsondata)
+        print mtjd
+        self.tStatistics.write("<div><br/></div><h2> Map Test Statistics</h2>\n")
+        self.tStatistics.write("<table class=\"general\" align=\"center\" cellpadding=\"5\" cellspacing=\"2\" width=\"70%\">\n")
+        self.tStatistics.write("<tr><th>test</th>><th>begintime</th><th>endtime</th><th>result</th><th>filepath</th></tr>\n")
+        self.tStatistics.write("<tr><td>upload map test</td><td>"+ mtjd["begintime"] +"</td><td>" + mtjd["endtime"] + "</td><td>"+ mtjd["upload"] +"</td><td>" + mtjd["loadpath"] + "</td></tr>\n")
+        self.tStatistics.write("<tr><td>download map test</td><td>"+ mtjd["begintime"] +"</td><td>" + mtjd["endtime"] + "</td><td>"+ mtjd["download"] +"</td><td>" + mtjd["savepath"] + "</td></tr>\n")
+
+        self.tStatistics.write("</table>\n")
+
     def endReport(self):
         self.tStatistics.write( self.html5)
         self.tStatistics.close()
@@ -359,6 +374,14 @@ class Report(object):
         self.tCss = open(".\\report\\wcss.css" , 'wb')
         self.tCss.write(self.css)
         self.tCss.close()
+
+    def runCreateMTReport(self,ip,productname):
+        self.createCSS()
+        self.createReport(productname)
+        self.getDeviceInfo(ip)
+        self.addDeviceInfo()
+        self.addMapTestInfo()
+        self.endReport()
 
     def runCreateTPReport(self,ip,productname):
         self.createCSS()

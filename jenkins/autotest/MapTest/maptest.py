@@ -7,6 +7,8 @@
 
 import sys,os,time,json
 
+from createreport import Report
+
 class MapTest(object):
     def __init__(self,ip,loadpath,savepath):
         self.ip = ip
@@ -36,6 +38,10 @@ class MapTest(object):
             print self.logtest + str(e)
 
     def SetUp(self):
+        self.result["loadpath"] = self.loadpath
+        self.result["savepath"] = self.savepath
+        begin = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
+        self.result["begintime"] = str(begin)
         try:
             if os.path.exists(self.loadpath):
                 print self.logtest + "<load path>" + self.loadpath + " check ok"
@@ -51,6 +57,8 @@ class MapTest(object):
             print self.logtest + str(e)
 
     def run(self):
+        end = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
+        self.result["endtime"] = str(end)
         self.WriteToFile("testinfo.json",self.result)
 
     def WriteToFile(self,filestr,jsondata):
@@ -75,3 +83,5 @@ if __name__ == "__main__":
     mt.MapUpload()
     mt.MapDownload()
     mt.run()
+    rep = Report("Map Test")
+    rep.runCreateMTReport(ip , "ZEUS TEST")
