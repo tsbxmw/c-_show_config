@@ -6,6 +6,7 @@
 # version : 1.0
 '''
 import os,sys,time,json
+from createreport import Report
 
 class SonarTest(object):
     def __init__(self,deviceip):
@@ -14,8 +15,10 @@ class SonarTest(object):
         self.result = {}
         self.id = ["6", "7", "8", "9", "10"]
         self.point = {}
-        self.point["x"] = "0.11"
-        self.point["y"] = "4.95"
+        self.point["x"] = "3"
+        self.point["y"] = "0"
+        begin = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
+        self.result["begintime"] = str(begin)
         
     def readresult(self):
         file = open("result","r")
@@ -34,10 +37,14 @@ class SonarTest(object):
             
   
     def WriteToFile(self,filestr,jsondata):
+
+        end = time.strftime('%Y-%m-%d-%H:%M:%S',time.localtime(time.time()) )
+        self.result["endtime"] = str(end)
         jsonin = json.dumps(jsondata)
         f = open(filestr,'w')
         f.write(jsonin)
         f.close()
+
         
     def run(self):
         try:
@@ -56,3 +63,5 @@ if __name__ == "__main__":
     sonar = SonarTest(ip)
     sonar.run()
     sonar.readresult()
+    rep = Report("Sonar Test")
+    rep.runCreateSonarTestReport(ip , "ZEUS TEST")
