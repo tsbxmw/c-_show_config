@@ -14,6 +14,7 @@ class RealsenseTest(object):
     def __init__(self,ip):
         self.ip = ip
         self.result = {}
+
     def run(self):
         root = Root(self.ip)
         root.TestRealSense()
@@ -21,15 +22,14 @@ class RealsenseTest(object):
     def readresult(self):
         file = open("realsense.log","r")
         if "Success" in file.readline():
-            print "[realsense] startup success"            
+            print "[realsense] startup success"
             self.result["result"] = "success"
         else:            
             self.result["result"] = "failed"
         file.close()
         
         self.WriteToFile("testinfo.json",self.result)
-            
-  
+        
     def WriteToFile(self,filestr,jsondata):
         jsonin = json.dumps(jsondata)
         f = open(filestr,'w')
@@ -45,4 +45,5 @@ if __name__ == "__main__":
     rt = RealsenseTest(ip)
     rt.run()
     rt.readresult()
+    
    
