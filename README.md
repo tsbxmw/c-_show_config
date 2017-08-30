@@ -28,6 +28,9 @@
 
     now also want to build a stable version 1.0 to using the auto test on a exe or jenkins or other website ...
 
+    attention here : now all change to new project "python-auto-struct"
+    (python-autotest-firmware)[https://github.com/tsbxmw/testshow/tree/master/python-autotest-firmware]
+
 ## something else
 
     try to build a new wall-paper to version2.0 , update the date_new.c to show more and more information .
