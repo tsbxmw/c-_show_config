@@ -1,5 +1,5 @@
 language: c
-script : echo start build 
+script : echo start build & gcc -C date.c & gcc -C date_cubie.c
 compiler:
     - clang
     - gcc
