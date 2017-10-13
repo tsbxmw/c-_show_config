@@ -1,0 +1,17 @@
+count is 2
+count is 1
+test version is : 2.3.2_rc1 [all] -------- [ 1 ] ---------
+ ----- [moveto] ----- 
+[moveto] moving to location(-7,-6)
+[moveto] actionId : 1 actionName : MoveAction
+ ----- [gohome] ----- 
+[gohome] gohome now ... 
+[gohome] actionId : 2 actionName : BackHomeAction
+[gohome] at home and charging
+0-success
+ [gohome]/[all] --- 0 / 1
+----------------------------------
+ all : 1
+ run : 2
+ gohome error : 0
+----------------------------------

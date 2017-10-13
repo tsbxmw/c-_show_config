@@ -1,0 +1,5 @@
+language: c
+script : echo start build 
+compiler:
+    - clang
+    - gcc
