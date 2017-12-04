@@ -1,1 +1,0 @@
-here save the Flash Daily Build log

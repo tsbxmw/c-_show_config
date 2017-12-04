@@ -1,1 +1,0 @@
-call get_slamware.bat

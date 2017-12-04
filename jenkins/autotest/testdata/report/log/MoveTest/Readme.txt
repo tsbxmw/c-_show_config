@@ -1,1 +1,0 @@
-here save the system log of every stage
