@@ -1,5 +1,3 @@
-@echo off
-
 echo Loading the vs2010 environment...
 call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
 
@@ -13,4 +11,4 @@ echo Building get video from hikivision test...
 
 set WORKSPACE_ROOT=%SDK_ROOT%
 
-msbuild test.sln /t:Build /p:Configuration=Debug
+msbuild test.vcxproj /t:Build /p:Configuration=Debug
