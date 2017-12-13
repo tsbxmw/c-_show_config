@@ -1,5 +1,5 @@
 echo Loading the vs2010 environment...
-call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
+call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" amd64
 
 echo Set the environment variable...
 set SCRIPT_ROOT=%~dp0
