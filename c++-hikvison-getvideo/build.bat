@@ -11,4 +11,4 @@ echo Building get video from hikivision test...
 
 set WORKSPACE_ROOT=%SDK_ROOT%
 
-msbuild test.vcxproj /t:Build /p:Configuration=Debug
+msbuild test.vcxproj /t:Build 
