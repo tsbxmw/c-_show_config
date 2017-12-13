@@ -6,5 +6,5 @@ echo ---------------------------------------------------------------------------
 msbuild "C:\projects\c-show-config\c++-getkeydown-background\getkeydown.vcxproj" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 echo ------------------------------------------------------------------------------------------------
-msbuild "C:\projects\c-show-config\c++-hikvison-getvideo\test.vcxproj" /verbosity:minimal /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
+cd c++-hikvison-getvideo
+call build.bat
