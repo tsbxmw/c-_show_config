@@ -1,9 +1,4 @@
-#include<stdio.h>
-#include<iostream>
-#include <time.h>
-#include "Windows.h"
-#include "HCNetSDK.h"
-#include "plaympeg4.h"
+#include "stdafx.h"
 using namespace std;
 
 typedef HWND (WINAPI *PROCGETCONSOLEWINDOW)();
