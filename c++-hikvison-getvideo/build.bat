@@ -1,5 +1,5 @@
 echo Loading the vs2010 environment...
-call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" amd64
+call "%VS100COMNTOOLS%\..\..\VC\vcvarsall.bat" x86
 
 echo Set the environment variable...
 set SCRIPT_ROOT=%~dp0
@@ -11,4 +11,4 @@ echo Building get video from hikivision test...
 
 set WORKSPACE_ROOT=%SDK_ROOT%
 
-msbuild test.vcxproj /t:Build 
+msbuild test.vcxproj /p:configuration=Debug;platform=x64
