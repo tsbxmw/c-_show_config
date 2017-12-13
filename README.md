@@ -11,6 +11,7 @@
 ## Build Statu
 
 [![Build Status](https://travis-ci.org/tsbxmw/c-_show_config.svg?branch=master)](https://travis-ci.org/tsbxmw/c-_show_config)
+[![Build status](https://ci.appveyor.com/api/projects/status/52bkbro1143l12dj?svg=true)](https://ci.appveyor.com/project/tsbxmw/c-show-config)
 
 
 ## details
