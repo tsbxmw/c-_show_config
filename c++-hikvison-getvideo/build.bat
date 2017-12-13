@@ -13,4 +13,4 @@ echo Building slamware sdk test...
 
 set WORKSPACE_ROOT=%SDK_ROOT%
 
-msbuild test.sln 
+msbuild test.sln /t:Build /p:Configuration=Debug
