@@ -1,4 +1,4 @@
 language: c
-script : echo start build & gcc -C -std=c99 date.c 
+script : echo start build & gcc -C -std=c99 date.c -o data.o & chmod a+x data.o & ./data.o
 compiler:
     - gcc
